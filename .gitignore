@@ -1,0 +1,31 @@
+# dependencies
+/ui/node_modules
+/.pnp
+.pnp.js
+
+# testing
+ui/coverage
+
+# production
+/ui/build
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+
+
+HELP.md
+/auth0-spring-boot/.gradle
+/auth0-spring-boot/build/
+/auth0-spring-boot/bin/
+/auth0-spring-boot/!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+
+### VS Code ###
+.vscode/
