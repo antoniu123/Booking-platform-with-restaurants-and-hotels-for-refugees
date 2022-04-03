@@ -25,4 +25,15 @@ public class JwtService {
         return exampleList;
     }
 
+    public String getUser(){
+        JwtAuthenticationToken authenticationToken = (JwtAuthenticationToken) SecurityContextHolder.getContext()
+                .getAuthentication();
+        return authenticationToken.getTokenAttributes()
+                .get("sub")
+                .toString()
+                .substring(authenticationToken.getTokenAttributes().get("sub").toString().indexOf("|") + 1,
+                        authenticationToken.getTokenAttributes().get("sub").toString().length() - 1);
+    }
+
+
 }

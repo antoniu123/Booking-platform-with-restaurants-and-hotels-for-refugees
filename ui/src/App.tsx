@@ -7,6 +7,7 @@ import { Button, Card,  Spin } from "antd";
 import { LoadingOutlined } from '@ant-design/icons'
 import jwtDecode from "jwt-decode"
 import { TokenDecoded } from "./model/TokenDecoded";
+import {Home} from "./Home";
 
 const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
@@ -79,28 +80,15 @@ const App: React.VFC = () => {
   return (
     <>
     { isLoading ?
-      <><Spin indicator={antIcon} /> </> :
+      <><Spin size="large" indicator={antIcon} /> </> :
       <>
         {isAuthenticated &&          
-          ( <div className="App">
-              <header className="App-header">
-                <img src={logo} className="App-logo" alt="logo" />
-                <p>Hi {user ? user.email : ''}, You have successfully logged in.</p>
-                <>{getRole(accessToken)}</>
-              </header>  
-              <div>
-                <Card>
-                  <Button type="primary" onClick={() => securedAPITest()}>Test Private API</Button>
-                  {
-                    apiResponseMessage ? 
-                    <p>Response Message: {apiResponseMessage}</p> : ''
-                  }
-                  <Button type="primary" onClick={() => logout({ returnTo: window.location.origin })}>
-                    Log Out
-                  </Button>
-                </Card>
-              </div>
-            </div>)
+          ( <>
+              <Home roles={getRole(accessToken)}
+                    user={user}
+                    logout={()=>logout({ returnTo: window.location.origin })}
+                    message={apiResponseMessage} action={() => securedAPITest()}/>
+            </>)
         }
         {!isAuthenticated &&
           (

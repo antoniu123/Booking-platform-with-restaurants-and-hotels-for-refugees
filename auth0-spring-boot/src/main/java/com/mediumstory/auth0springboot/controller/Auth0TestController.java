@@ -28,6 +28,7 @@ public class Auth0TestController {
     @GetMapping(value = "/private")
     public ResponseEntity<ResponseDTO> privateEndpoint() {
         List<String> roles = jwtService.getRoles();
+        System.out.println(jwtService.getUser());
         return ResponseEntity.ok(new ResponseDTO("Private Endpoint Working fine !"));
     }
 
