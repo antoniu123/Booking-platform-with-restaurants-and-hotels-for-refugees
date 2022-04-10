@@ -2,6 +2,7 @@
 /ui/node_modules
 /.pnp
 .pnp.js
+/.idea/
 
 # testing
 ui/coverage
@@ -29,3 +30,4 @@ HELP.md
 
 ### VS Code ###
 .vscode/
+/.idea/

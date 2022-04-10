@@ -22,6 +22,7 @@ const App: React.VFC = () => {
     logout,
   } = useAuth0();
 
+
   const [accessToken, setAccessToken] = useState<string>(undefined as unknown as string);
   const [apiResponseMessage, setAPIResponseMessage] = useState('');
 
