@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import configData from "./config.json";
 import logo from "./logo.svg";
-import { Button, Card,  Spin } from "antd";
+import { Button, Spin } from "antd";
 import { LoadingOutlined } from '@ant-design/icons'
 import jwtDecode from "jwt-decode"
 import { TokenDecoded } from "./model/TokenDecoded";

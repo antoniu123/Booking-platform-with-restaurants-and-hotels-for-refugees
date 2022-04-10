@@ -1,6 +1,5 @@
 import React from "react";
-import "antd/dist/antd.css"
-import {Breadcrumb, Button, Layout, Menu} from "antd";
+import {Breadcrumb, Layout, Menu, Image} from "antd";
 import { User } from '@auth0/auth0-spa-js';
 import {LaptopOutlined, NotificationOutlined, UserOutlined} from "@ant-design/icons";
 
@@ -23,11 +22,12 @@ export const Home : React.VFC<HomeProps> = ({action, user, roles, logout, messag
                     <div className="logo" />
                     <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['1']}>
                         <Menu.Item key="1">Hotels</Menu.Item>
-                        <Menu.Item key="2">Hostels</Menu.Item>
-                        <Menu.Item key="3">Restaurants</Menu.Item>
+                        <Menu.Item key="2">Restaurant</Menu.Item>
+                        <Menu.Item key="3">Ask for help</Menu.Item>
                         <Menu.Item key="4" onClick={logout}>Logout</Menu.Item>
                     </Menu>
                 </Header>
+                <p className="ant-divider-with-text">Hi {user ? user.email : ''}, You have successfully logged in as {roles}</p>
                 <Layout>
                     <Sider width={200} className="site-layout-background">
                         <Menu
@@ -70,13 +70,18 @@ export const Home : React.VFC<HomeProps> = ({action, user, roles, logout, messag
                                 minHeight: 280,
                             }}
                         >
-                            <p>Hi {user ? user.email : ''}, You have successfully logged in.</p>
-                            <>{roles}</>
-                            <Button type="primary" onClick={() => action()}>Test Private API</Button>
-                            {
-                                message ?
-                                    <p>Response Message: {message}</p> : ''
-                            }
+                            <h1 className="font-medium leading-tight text-2xl mt-0 mb-2 text-blue-600">
+                                Hello world!
+                            </h1>
+                            {/*<Button type="primary" onClick={() => action()}>Test Private API</Button>*/}
+                            {/*{*/}
+                            {/*    message ?*/}
+                            {/*        <p>Response Message: {message}</p> : ''*/}
+                            {/*}*/}
+                            <Image
+                                preview={false}
+                                src="background.jpg"
+                            />
                         </Content>
                     </Layout>
                 </Layout>
