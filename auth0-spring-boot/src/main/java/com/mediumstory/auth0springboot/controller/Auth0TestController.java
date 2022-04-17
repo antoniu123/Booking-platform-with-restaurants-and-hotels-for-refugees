@@ -2,7 +2,7 @@ package com.mediumstory.auth0springboot.controller;
 
 import java.util.List;
 
-import com.mediumstory.auth0springboot.dto.ResponseDTO;
+import com.mediumstory.auth0springboot.dto.ResponseDto;
 import com.mediumstory.auth0springboot.service.JwtService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,15 +21,15 @@ public class Auth0TestController {
     private JwtService jwtService;
 
     @GetMapping(value = "/public")
-    public ResponseEntity<ResponseDTO> publicEndpoint() {
-        return ResponseEntity.ok(new ResponseDTO("Public Endpoint Working fine !"));
+    public ResponseEntity<ResponseDto> publicEndpoint() {
+        return ResponseEntity.ok(new ResponseDto("Public Endpoint Working fine !"));
     }
 
     @GetMapping(value = "/private")
-    public ResponseEntity<ResponseDTO> privateEndpoint() {
+    public ResponseEntity<ResponseDto> privateEndpoint() {
         List<String> roles = jwtService.getRoles();
         System.out.println(jwtService.getUser());
-        return ResponseEntity.ok(new ResponseDTO("Private Endpoint Working fine !"));
+        return ResponseEntity.ok(new ResponseDto("Private Endpoint Working fine !"));
     }
 
 }

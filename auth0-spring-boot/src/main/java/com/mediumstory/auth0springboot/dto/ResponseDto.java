@@ -1,10 +1,10 @@
 package com.mediumstory.auth0springboot.dto;
 
-public class ResponseDTO {
+public class ResponseDto {
 
 	private String message;
 
-	public ResponseDTO(String message) {
+	public ResponseDto(String message) {
 		super();
 		this.message = message;
 	}
