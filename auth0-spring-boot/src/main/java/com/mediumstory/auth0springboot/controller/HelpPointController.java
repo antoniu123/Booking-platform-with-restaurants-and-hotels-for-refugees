@@ -17,9 +17,10 @@ import java.util.stream.Collectors;
 @CrossOrigin("*")
 @RequestMapping("/help")
 public class HelpPointController {
-	@Autowired
-	private HelpPointService helpPointService;
 
+	private final HelpPointService helpPointService;
+
+	@Autowired
 	public HelpPointController(HelpPointService helpPointService) {
 		this.helpPointService = helpPointService;
 	}
