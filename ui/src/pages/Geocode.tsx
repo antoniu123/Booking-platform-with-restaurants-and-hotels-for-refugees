@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, {useEffect, useRef} from 'react'
 import esriConfig from "@arcgis/core/config.js"
 import MapView from "@arcgis/core/views/MapView"
 import ArcGISMap from "@arcgis/core/Map"
@@ -6,11 +6,11 @@ import Graphic from "@arcgis/core/Graphic"
 import AddressCandidate from "@arcgis/core/rest/support/AddressCandidate";
 import * as locator from "@arcgis/core/rest/locator"
 
-interface GeocodeProps{
-  centerX: number
-  centerY: number
-  zoom: number
-  addresses: string[]
+interface GeocodeProps {
+    centerX: number
+    centerY: number
+    zoom: number
+    addresses: string[]
 }
 
 const simpleMarkerSymbolOrigin = {
@@ -20,9 +20,9 @@ const simpleMarkerSymbolOrigin = {
     size: "12px"
 };
 
-const Geocode: React.VFC<GeocodeProps> = ({centerX, centerY, zoom, addresses }) =>{
+const Geocode: React.VFC<GeocodeProps> = ({centerX, centerY, zoom, addresses}) => {
 
-   // create a ref to element to be used as the map's container
+    // create a ref to element to be used as the map's container
     const mapEl = useRef(null);
 
     // use a side effect to create the map after react has rendered the DOM
@@ -38,60 +38,59 @@ const Geocode: React.VFC<GeocodeProps> = ({centerX, centerY, zoom, addresses }) 
             const map = new ArcGISMap({
                 basemap: "arcgis-navigation"
             });
-          
+
             view = new MapView({
                 container: mapEl.current ? mapEl.current : '',
                 map: map,
-                center: [centerX,centerY],
+                center: [centerX, centerY],
                 zoom: zoom
             });
 
-            for (const addressName of addresses){
-              const params = {
-                  address: {
-                    "address": addressName
-                  }
-              }
-
-              locator.addressToLocations(geocodeUrl, params).then((results) => {
-                  console.log("longitude = ", results[0].location.longitude, 
-                  " latitude = ", results[0].location.latitude)
-                  showResult(results);
-              });
-            }           
-
-            function showResult(results:AddressCandidate[]) {
-                if (view && results.length) {
-                  const result = results[0];
-                  console.log(result.address)
-                  view.graphics.add(new Graphic({
-                      symbol: simpleMarkerSymbolOrigin,
-                      geometry: result.location,
-                      attributes: {
-                        title: "Address",
-                        address: result.address,
-                        score: result.score
-                      },
-                      popupTemplate: {
-                        title: "{addressName}",
-                        content: result.address + "<br><br>longitude:" + result.location.longitude + "-latitude:" + result.location.latitude
-                      }
+            for (const addressName of addresses) {
+                const params = {
+                    address: {
+                        "address": addressName
                     }
-                  ));
-                  if (results.length) {
+                }
+
+                locator.addressToLocations(geocodeUrl, params).then((results) => {
+                    console.log("longitude = ", results[0].location.longitude,
+                        " latitude = ", results[0].location.latitude)
+                    showResult(results);
+                });
+            }
+
+            function showResult(results: AddressCandidate[]) {
+                if (view && results.length) {
+                    const result = results[0];
+                    console.log(result.address)
+                    view.graphics.add(new Graphic({
+                            symbol: simpleMarkerSymbolOrigin,
+                            geometry: result.location,
+                            attributes: {
+                                title: "Address",
+                                address: result.address,
+                                score: result.score
+                            },
+                            popupTemplate: {
+                                title: "{addressName}",
+                                content: result.address + "<br><br>longitude:" + result.location.longitude + "-latitude:" + result.location.latitude
+                            }
+                        }
+                    ));
                     const g = view.graphics.getItemAt(0);
+                    view.popup.alignment="top-center"
                     view.popup.open({
-                      features: [g],
-                      location: g.geometry
+                        features: [g],
+                        location: g.geometry
                     });
-                  }
-                  view.goTo({
-                    target: result.location,
-                    zoom: 13
-                  });
+                    view.goTo({
+                        target: result.location,
+                        zoom: 10
+                    });
                 }
             }
-            
+
             return () => {
                 // clean up the map view
                 if (!!view) {
@@ -103,7 +102,7 @@ const Geocode: React.VFC<GeocodeProps> = ({centerX, centerY, zoom, addresses }) 
         // only re-load the map if the id has changed
         [centerX, centerY, zoom, addresses]
     );
-    return <div style={{ height: 800 }} ref={mapEl} />;
+    return <div style={{height: 800}} ref={mapEl}/>;
 
 }
 

@@ -4,18 +4,21 @@ import './index.css';
 import App from './App';
 import { Auth0Provider } from "@auth0/auth0-react";
 import configData from "./config.json";
+import {BrowserRouter} from "react-router-dom";
 
 
 ReactDOM.render(
-  <React.StrictMode>
+  <BrowserRouter>
     <Auth0Provider     
       {...configData}
       cacheLocation="localstorage"
       redirect_uri="window.location.origin"
       useRefreshTokens={true}  
       >
-      <App />
+        <>
+            <App />
+        </>
     </Auth0Provider>
-  </React.StrictMode>,
+  </BrowserRouter>,
   document.getElementById('root')
 );
