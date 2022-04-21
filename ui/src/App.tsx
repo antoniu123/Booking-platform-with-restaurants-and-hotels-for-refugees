@@ -12,6 +12,7 @@ import {Help} from "./pages/Help";
 import { User } from '@auth0/auth0-spa-js';
 import Hotels from "./pages/Hotels";
 import Reservations from "./pages/Reservations";
+import Restaurants from "./pages/Restaurants";
 
 const { SubMenu } = Menu;
 const {Content, Sider } = Layout;
@@ -124,7 +125,9 @@ const App: React.VFC = () => {
                               <Menu.Item key="1">
                                 <Link to="/hotels">Hotels</Link>
                               </Menu.Item>
-                              <Menu.Item key="2">Restaurants</Menu.Item>
+                              <Menu.Item key="2">
+                                <Link to="/restaurants">Restaurants</Link>
+                              </Menu.Item>
                             </>}
                         {getRole(accessToken) === "USER" &&
                             <Menu.Item key="3">
@@ -164,8 +167,10 @@ const App: React.VFC = () => {
                       <Routes>
                         <Route path='/' element={<Home/>}/>
                         <Route path='/hotels' element={<Hotels/>}/>
+                        <Route path='/restaurants' element={<Restaurants/>}/>
                         <Route path='/reservations' element={<Reservations/>}/>
                         <Route path='/help' element={<Help/>}/>
+
                       </Routes>
                     </Content>
                   </Layout>
@@ -181,7 +186,7 @@ const App: React.VFC = () => {
               <header className="App-header">
                 <img src= "background.jpg" alt="background" />
               </header>
-              <Button className = "primaryButton" type="primary" onClick={() => login()}>
+              <Button type="primary" onClick={() => login()}>
                         Log in
               </Button>
             </div>      

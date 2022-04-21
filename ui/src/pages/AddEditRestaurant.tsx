@@ -3,7 +3,7 @@ import {useMachine} from "@xstate/react";
 import {Button, Form, Input, message, Modal, Result, Spin,} from "antd";
 import {assign, Machine} from "xstate";
 import axios from "axios";
-import {Hotel} from "../model/Hotel";
+import {Restaurant} from "../model/Restaurant";
 import {UserContext, UserContextInterface} from "../App";
 
 const onOk = () => {
@@ -22,24 +22,24 @@ const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo);
 };
 
-interface AddEditHotelProps {
-    hotelId: number
+interface AddEditRestarantProps {
+    restaurantId: number
     visible: boolean
     onSubmit: () => void
     onCancel: () => void
     onRefresh: () => void
 }
 
-const AddEditHotel: React.FC<AddEditHotelProps> = ({hotelId, visible, onSubmit, onCancel, onRefresh}) => {
+const AddEditRestaurant: React.FC<AddEditRestarantProps> = ({restaurantId, visible, onSubmit, onCancel, onRefresh}) => {
 
     const value:UserContextInterface|null = React.useContext(UserContext)
 
     const [form] = Form.useForm()
 
-    const [hotelState, send] = useMachine(
-        createHotelMachine(
+    const [restaurantState, send] = useMachine(
+        createRestaurantMachine(
             value,
-            hotelId,
+            restaurantId,
             onOk,
             onError,
             onSubmit,
@@ -49,18 +49,18 @@ const AddEditHotel: React.FC<AddEditHotelProps> = ({hotelId, visible, onSubmit, 
     )
 
     const titleModal = () => {
-        return hotelId === 0 ? 'Hotel details' : 'Hotel details for ' + hotelState.context.hotel.id
+        return restaurantId === 0 ? 'Restaurant details' : 'Restaurant details for ' + restaurantState.context.restaurant.id
     }
 
     return (
         <>
-            {hotelState.matches('loadingHotel') && (
+            {restaurantState.matches('loadingRestaurant') && (
                 <>
                     <Spin/>
                 </>
             )}
 
-            {hotelState.matches('loadHotelResolved') && (
+            {restaurantState.matches('loadRestaurantResolved') && (
                 <>
                     <div>
                         <Modal maskClosable={false} title={titleModal()}
@@ -68,14 +68,13 @@ const AddEditHotel: React.FC<AddEditHotelProps> = ({hotelId, visible, onSubmit, 
                                onOk={() => {
                                    send({
                                            type: 'SAVE',
-                                           payload: {hotel: hotelState.context.hotel}
+                                           payload: {restaurant: restaurantState.context.restaurant}
                                        }
                                    )
                                    onSubmit()
                                }
                                }
                                onCancel={onCancel}
-
                         >
                             <Form
                                 name="basic"
@@ -83,10 +82,8 @@ const AddEditHotel: React.FC<AddEditHotelProps> = ({hotelId, visible, onSubmit, 
                                 labelCol={{span: 8}}
                                 wrapperCol={{span: 16}}
                                 initialValues={{
-                                    name: hotelState.context.hotel.name,
-                                    zone: hotelState.context.hotel.zone,
-                                    nr_rooms: hotelState.context.hotel.nr_rooms,
-                                    image: hotelState.context.hotel.image
+                                    name: restaurantState.context.restaurant.name,
+                                    image: restaurantState.context.restaurant.image,
                                 }}
                                 onFinish={onFinish}
                                 onFinishFailed={onFinishFailed}
@@ -99,32 +96,9 @@ const AddEditHotel: React.FC<AddEditHotelProps> = ({hotelId, visible, onSubmit, 
                                 >
                                     <Input onChange={(e) => {
                                         e.preventDefault()
-                                        hotelState.context.hotel.name = e.target.value
+                                        restaurantState.context.restaurant.name = e.target.value
                                     }}/>
                                 </Form.Item>
-
-                                <Form.Item
-                                    label="Zone"
-                                    name="zone"
-                                    rules={[{required: true, message: 'Please input zone'}]}
-                                >
-                                    <Input onChange={(e) => {
-                                        e.preventDefault()
-                                        hotelState.context.hotel.zone = e.target.value
-                                    }}/>
-                                </Form.Item>
-
-                                <Form.Item
-                                    label="Number of rooms"
-                                    name="nr_rooms"
-                                    rules={[{required: true, message: 'Please input number of rooms'}]}
-                                >
-                                    <Input onChange={(e) => {
-                                        e.preventDefault()
-                                        hotelState.context.hotel.nr_rooms = Number(e.target.value)
-                                    }}/>
-                                </Form.Item>
-
                                 <Form.Item
                                     label="Image name"
                                     name="image"
@@ -132,9 +106,10 @@ const AddEditHotel: React.FC<AddEditHotelProps> = ({hotelId, visible, onSubmit, 
                                 >
                                     <Input onChange={(e) => {
                                         e.preventDefault()
-                                        hotelState.context.hotel.image = e.target.value
+                                        restaurantState.context.restaurant.image = e.target.value
                                     }}/>
                                 </Form.Item>
+
                             </Form>
 
                         </Modal>
@@ -142,7 +117,7 @@ const AddEditHotel: React.FC<AddEditHotelProps> = ({hotelId, visible, onSubmit, 
                 </>
             )}
 
-            {hotelState.matches('loadHotelRejected') && (
+            {restaurantState.matches('loadRestaurantRejected') && (
                 <>
                     <Result
                         status="error"
@@ -160,88 +135,87 @@ const AddEditHotel: React.FC<AddEditHotelProps> = ({hotelId, visible, onSubmit, 
 
 }
 
-export default AddEditHotel
+export default AddEditRestaurant
 
-interface AddEditHotelMachineContext {
-    hotel: Hotel
+interface AddEditRestaurantMachineContext {
+    restaurant: Restaurant
 }
 
-interface AddEditHotelMachineSchema {
-    context: AddEditHotelMachineContext
+interface AddEditRestaurantMachineSchema {
+    context: AddEditRestaurantMachineContext
     states: {
-        loadingHotel: {}
-        loadHotelResolved: {}
-        loadHotelRejected: {}
-        savingHotel: {}
+        loadingRestaurant: {}
+        loadRestaurantResolved: {}
+        loadRestaurantRejected: {}
+        savingRestaurant: {}
     }
 }
 
-type AddEditHotelMachineEvent = | { type: 'RETRY' } | { type: 'SAVE'; payload: { hotel: Hotel } }
+type AddEditRestaurantMachineEvent = | { type: 'RETRY' } | { type: 'SAVE'; payload: { restaurant: Restaurant } }
 
-const createHotelMachine = (userContext:UserContextInterface|null,
-                            hotelId: number,
+const createRestaurantMachine = (userContext:UserContextInterface|null,
+                            restaurantId: number,
                             onOk: () => void,
                             onError: () => void,
                             onSubmit: () => void,
                             onCancel: () => void,
                             onRefresh: () => void) =>
-    Machine<AddEditHotelMachineContext, AddEditHotelMachineSchema, AddEditHotelMachineEvent>(
+    Machine<AddEditRestaurantMachineContext, AddEditRestaurantMachineSchema, AddEditRestaurantMachineEvent>(
         {
-            id: 'addedit-hotel-machine',
+            id: 'addedit-Restaurant-machine',
             context: {
-                hotel: {
+                restaurant: {
                     id: 0,
                     name: '',
-                    zone: '',
-                    nr_rooms: 0
+                    image: ''
                 }
             },
-            initial: 'loadingHotel',
+            initial: 'loadingRestaurant',
             states: {
-                loadingHotel: {
+                loadingRestaurant: {
                     invoke: {
-                        id: 'loadingHotel',
-                        src: 'loadHotel',
+                        id: 'loadingRestaurant',
+                        src: 'loadRestaurant',
                         onDone: {
-                            target: 'loadHotelResolved',
+                            target: 'loadRestaurantResolved',
                             actions: assign((context, event) => {
                                 if (event.data.data)
                                     return {
-                                        hotel: event.data.data
+                                        restaurant: event.data.data
                                     }
                                 else
                                     return {
-                                        hotel: event.data
+                                        restaurant: event.data
                                     }
 
                             })
                         },
                         onError: {
-                            target: 'loadHotelRejected'
+                            target: 'loadRestaurantRejected'
                         }
                     }
                 },
-                loadHotelResolved: {
+                loadRestaurantResolved: {
                     on: {
                         RETRY: {
-                            target: 'loadingHotel'
+                            target: 'loadingRestaurant'
                         },
                         SAVE: {
-                            target: 'savingHotel'
+                            target: 'savingRestaurant'
                         }
                     }
                 },
-                loadHotelRejected: {
+                loadRestaurantRejected: {
                     on: {
                         RETRY: {
-                            target: 'loadingHotel'
+                            target: 'loadingRestaurant'
                         }
                     }
                 },
-                savingHotel: {
+                savingRestaurant: {
                     invoke: {
-                        id: 'savingHotel',
-                        src: 'saveHotel',
+                        id: 'savingRestaurant',
+                        src: 'saveRestaurant',
                         onDone: {
                             actions: 'callOk'
                         },
@@ -266,12 +240,12 @@ const createHotelMachine = (userContext:UserContextInterface|null,
                 }
             },
             services: {
-                loadHotel: () => getHotelById(hotelId, userContext),
-                saveHotel: (id, event) => {
+                loadRestaurant: () => getRestaurantById(restaurantId, userContext),
+                saveRestaurant: (id, event) => {
                     if (event.type === 'SAVE'){
                         const token = userContext ? userContext.accessToken : ''
-                        const url = `http://${process.env.REACT_APP_SERVER_NAME}/hotels/hotel`
-                        return axios.post(url, event.payload.hotel, {headers: {"Authorization": `Bearer ${token}`,
+                        const url = `http://${process.env.REACT_APP_SERVER_NAME}/restaurants/restaurant`
+                        return axios.post(url, event.payload.restaurant, {headers: {"Authorization": `Bearer ${token}`,
                                                                                      "Content-Type": "application/json"} })
                     }
                     else
@@ -281,20 +255,19 @@ const createHotelMachine = (userContext:UserContextInterface|null,
         }
     )
 
-function getHotelById(id: number,userContext: UserContextInterface | null): Promise<Hotel | string> {
+function getRestaurantById(id: number,userContext: UserContextInterface | null): Promise<Restaurant | string> {
     if (id === undefined || id === null) {
         return Promise.reject("some error")
     } else if (id === 0) {
-        const hotel = {
+        const restaurant = {
             id: 0,
             name: '',
-            zone: '',
-            nr_rooms: 0
+            image: ''
         }
-        return Promise.resolve(hotel)
+        return Promise.resolve(restaurant)
     } else{
         const token = userContext ? userContext.accessToken : ''
-        return axios.get(`http://${process.env.REACT_APP_SERVER_NAME}/hotels/${id}`,{headers: {"Authorization": `Bearer ${token}`,
+        return axios.get(`http://${process.env.REACT_APP_SERVER_NAME}/restaurants/${id}`,{headers: {"Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json"} })
     }
 

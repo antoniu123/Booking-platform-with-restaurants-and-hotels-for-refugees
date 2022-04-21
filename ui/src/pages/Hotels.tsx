@@ -63,6 +63,7 @@ const Hotels: React.FC = () => {
         {
             title: 'Edit',
             key: 'edit',
+            hidden: value?.role.toString() !== "ADMIN",
             render: (record: Hotel) => (
                 <Button hidden={value?.role.toString() !== "ADMIN"} type="primary" ghost onClick={
                     () => {
@@ -75,6 +76,7 @@ const Hotels: React.FC = () => {
         {
             title: 'Delete',
             key: 'delete',
+            hidden: value?.role.toString() !== "ADMIN",
             render: (record: Hotel) => (
                 <Button hidden={value?.role.toString() !== "ADMIN"} danger onClick={
                     () => {
@@ -88,6 +90,7 @@ const Hotels: React.FC = () => {
         {
             title: 'Detail',
             key: 'detail',
+            hidden: value?.role.toString() !== "USER",
             render: (record: Hotel) => (
                 <Button hidden={value?.role.toString() !== "USER"} onClick={() => {
                     setHotelId(record.id)
@@ -99,6 +102,7 @@ const Hotels: React.FC = () => {
         {
             title: 'Pick',
             key: 'pick',
+            hidden: value?.role.toString() !== "USER",
             render: (record: Hotel) => (
                 <Button hidden={value?.role.toString() !== "USER"} onClick={() => {
                     setHotelId(record.id)
@@ -109,7 +113,8 @@ const Hotels: React.FC = () => {
                 }> Pick </Button>
             )
         }
-    ];
+    ].filter(item => !item.hidden);
+
     return (
         <div>
             {(hotelState.matches('loadingHotelData') ||
@@ -126,7 +131,7 @@ const Hotels: React.FC = () => {
                 <>
                     <p className={"center_text"}>These are our hotel options</p>
                     {value?.role.toString() === "ADMIN" &&
-                        <Button className="primaryButton" type="primary" onClick={
+                        <Button type="primary" onClick={
                             () => {
                                 setHotelId(0)
                                 setAddEditVisible(true)
@@ -166,7 +171,7 @@ const Hotels: React.FC = () => {
             )}
 
             {hotelState.matches('pickingHotel') && (
-                <Modal title={"Pick date for reservation"}
+                <Modal maskClosable={false} title={"Pick date for reservation"}
                        visible={pickVisible}
                        onOk={submit}
                        onCancel={()=>{

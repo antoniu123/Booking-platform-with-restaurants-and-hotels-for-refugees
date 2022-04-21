@@ -1,6 +1,6 @@
-import { Table } from "antd";
+import {Table} from "antd";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import {UserContext, UserContextInterface} from "../App";
 import {Reservation} from "../model/Reservation";
 import {User} from "@auth0/auth0-spa-js";
