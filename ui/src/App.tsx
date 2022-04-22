@@ -13,6 +13,7 @@ import { User } from '@auth0/auth0-spa-js';
 import Hotels from "./pages/Hotels";
 import Reservations from "./pages/Reservations";
 import Restaurants from "./pages/Restaurants";
+import MenuDetailsManage from "./pages/MenuDetailsManage";
 
 const { SubMenu } = Menu;
 const {Content, Sider } = Layout;
@@ -137,6 +138,10 @@ const App: React.VFC = () => {
                             <Menu.Item key="9">
                               <Link to="/reservations">My reservations</Link>
                             </Menu.Item>}
+                        {getRole(accessToken) === "ADMIN" &&
+                        <Menu.Item key="1">
+                          <Link to="/menu">Menu</Link>
+                        </Menu.Item>}
                         {getRole(accessToken) === "HELPER" &&
                             <Menu.Item key="6">Offer help</Menu.Item>}
                       </SubMenu>
@@ -170,7 +175,7 @@ const App: React.VFC = () => {
                         <Route path='/restaurants' element={<Restaurants/>}/>
                         <Route path='/reservations' element={<Reservations/>}/>
                         <Route path='/help' element={<Help/>}/>
-
+                        <Route path='/menu' element={<MenuDetailsManage/>}/>
                       </Routes>
                     </Content>
                   </Layout>

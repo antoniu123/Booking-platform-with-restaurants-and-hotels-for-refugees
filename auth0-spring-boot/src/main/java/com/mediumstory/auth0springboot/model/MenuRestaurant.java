@@ -25,7 +25,7 @@ public class MenuRestaurant {
 	private Restaurant restaurant;
 
 	@Column(name = "PRICE", nullable = false)
-	private Integer price;
+	private Float price;
 
 	@Column(name = "IMAGE")
 	private String image;
@@ -33,7 +33,7 @@ public class MenuRestaurant {
 	public MenuRestaurant() {
 	}
 
-	public MenuRestaurant(Long id, String name, Restaurant restaurant, Integer price, String image) {
+	public MenuRestaurant(Long id, String name, Restaurant restaurant, Float price, String image) {
 		this.id = id;
 		this.name = name;
 		this.restaurant = restaurant;
@@ -65,11 +65,11 @@ public class MenuRestaurant {
 		this.restaurant = restaurant;
 	}
 
-	public Integer getPrice() {
+	public Float getPrice() {
 		return price;
 	}
 
-	public void setPrice(Integer price) {
+	public void setPrice(Float price) {
 		this.price = price;
 	}
 

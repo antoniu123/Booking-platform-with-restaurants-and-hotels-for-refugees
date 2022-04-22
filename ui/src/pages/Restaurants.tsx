@@ -78,6 +78,7 @@ const Restaurants: React.FC = () => {
         {
             title: 'Menu detail',
             key: 'detail',
+            hidden: value?.role.toString() !== "USER",
             render: (record: Restaurant) => (
                 <Button hidden={value?.role.toString() !== "USER"} onClick={() => {
                     send({type:'DETAIL', payload:{restaurant: record}})
@@ -101,8 +102,8 @@ const Restaurants: React.FC = () => {
         },
         {
             title: 'Order name',
-            dataIndex: 'orderName',
-            key: 'orderName',
+            dataIndex: 'name',
+            key: 'name',
         },
         {
             title: 'Price',

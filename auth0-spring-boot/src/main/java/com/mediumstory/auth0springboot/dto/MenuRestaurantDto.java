@@ -5,14 +5,14 @@ import java.io.Serializable;
 public class MenuRestaurantDto implements Serializable {
 	private long id;
 	private String restaurantName;
-	private String orderName;
-	private Integer price;
+	private String name;
+	private Float price;
 	private String image;
 
-	public MenuRestaurantDto(long id, String restaurantName, String orderName, Integer price, String image) {
+	public MenuRestaurantDto(long id, String restaurantName, String name, Float price, String image) {
 		this.id = id;
 		this.restaurantName = restaurantName;
-		this.orderName = orderName;
+		this.name = name;
 		this.price = price;
 		this.image = image;
 	}
@@ -33,19 +33,19 @@ public class MenuRestaurantDto implements Serializable {
 		this.restaurantName = restaurantName;
 	}
 
-	public String getOrderName() {
-		return orderName;
+	public String getName() {
+		return name;
 	}
 
-	public void setOrderName(String orderName) {
-		this.orderName = orderName;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public Integer getPrice() {
+	public Float getPrice() {
 		return price;
 	}
 
-	public void setPrice(Integer price) {
+	public void setPrice(Float price) {
 		this.price = price;
 	}
 
