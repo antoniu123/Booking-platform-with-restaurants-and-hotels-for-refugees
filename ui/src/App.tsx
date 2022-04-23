@@ -15,6 +15,7 @@ import Reservations from "./pages/Reservations";
 import Restaurants from "./pages/Restaurants";
 import MenuDetailsManage from "./pages/MenuDetailsManage";
 import OfferHelp from "./pages/OfferHelp";
+import CustomerSupport from "./pages/CustomerSupport";
 
 const { SubMenu } = Menu;
 const {Content, Sider } = Layout;
@@ -44,6 +45,7 @@ const App: React.VFC = () => {
   const [accessToken, setAccessToken] = useState<string>(undefined as unknown as string)
   const [apiResponseMessage, setAPIResponseMessage] = useState('')
   const [showOfferHelp, setShowOfferHelp] = useState(false)
+  const [showCustomerSupport, setShowCustomerSupport] = useState(false)
 
 
   useEffect(() => {
@@ -137,27 +139,27 @@ const App: React.VFC = () => {
                                 <Link to="/help">Ask for help</Link>
                             </Menu.Item>}
                         {getRole(accessToken) === "USER" &&
-                            <Menu.Item key="9">
+                            <Menu.Item key="4">
                               <Link to="/reservations">My reservations</Link>
                             </Menu.Item>}
                         {getRole(accessToken) === "ADMIN" &&
-                        <Menu.Item key="10">
+                        <Menu.Item key="5">
                           <Link to="/menu">Menu</Link>
                         </Menu.Item>}
                         {getRole(accessToken) === "ADMIN" &&
-                            <Menu.Item key="11">
+                            <Menu.Item key="6">
                               <Link to="/offerHelp" onClick={()=>setShowOfferHelp(true)}>Offer Help</Link>
                             </Menu.Item>}
-                        {getRole(accessToken) === "HELPER" &&
-                            <Menu.Item key="6">Offer help</Menu.Item>}
                       </SubMenu>
                       {getRole(accessToken) === "USER" &&
-                          <Menu.Item key="4" icon={<FormOutlined/>}>Customer support</Menu.Item>}
+                          <Menu.Item key="7" icon={<FormOutlined/>} >
+                            <Link to="/support" onClick={()=>setShowCustomerSupport(true)}>Customer support</Link>
+                          </Menu.Item>}
                       {getRole(accessToken) === "USER" &&
-                          <SubMenu key="sub3" icon={<Avatar size={"small"} style={{ backgroundColor: '#87d068' }} icon={<UserOutlined/>} />} title="Profile">
-                            <Menu.Item key="5">Edit profile</Menu.Item>
+                          <SubMenu key="8" icon={<Avatar size={"small"} style={{ backgroundColor: '#87d068' }} icon={<UserOutlined/>} />} title="Profile">
+                            <Menu.Item key="9">Edit profile</Menu.Item>
                           </SubMenu>}
-                      <Menu.Item key="7" onClick={()=>logout({ returnTo: window.location.origin })}>Logout</Menu.Item>
+                      <Menu.Item key="10" onClick={()=>logout({ returnTo: window.location.origin })}>Logout</Menu.Item>
                     </Menu>
                   </Sider>
                   <Layout style={{ padding: '0 24px 24px' }}>
@@ -182,6 +184,8 @@ const App: React.VFC = () => {
                         <Route path='/reservations' element={<Reservations/>}/>
                         <Route path='/help' element={<Help/>}/>
                         <Route path='/menu' element={<MenuDetailsManage/>}/>
+                        <Route path='/support' element={<CustomerSupport close={()=>setShowCustomerSupport(false)}
+                                                                         visible={showCustomerSupport}/>}/>
                         <Route path='/offerHelp' element={<OfferHelp
                          close={()=>setShowOfferHelp(false)} visible={showOfferHelp}/>}/>
                       </Routes>

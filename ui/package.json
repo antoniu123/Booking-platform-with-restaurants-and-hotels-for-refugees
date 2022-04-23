@@ -7,6 +7,7 @@
     "@arcgis/core": "^4.22.2",
     "@auth0/auth0-react": "^1.6.0",
     "@craco/craco": "^6.4.3",
+    "@emailjs/browser": "^3.6.2",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",

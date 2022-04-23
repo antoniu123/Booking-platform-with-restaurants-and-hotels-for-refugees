@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import {assign, Machine} from "xstate";
 import axios from "axios";
 import {useMachine} from "@xstate/react";
-import {Alert, Button, Form, Result, Spin, Table} from 'antd';
+import {Alert, Button , Result, Spin, Table} from 'antd';
 import {MenuRestaurant} from "../model/MenuRestaurant";
 import {UserContext, UserContextInterface} from "../App";
 import AddEditMenuDetail from "./AddEditMenuDetail";
