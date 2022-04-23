@@ -21,7 +21,13 @@ public class HelpPointService {
 
 	public List<HelpPointDto> findAllHelpPoints(){
 		return helpPointRepository.findAll().stream()
-				.map(t-> new HelpPointDto(t.getId(), t.getName(), t.getLongitude(), t.getLatitude(), t.getAddress())).collect(Collectors.toList());
+				.map(t-> new HelpPointDto(t.getId(), t.getName(), t.getAddress())).collect(Collectors.toList());
+	}
+
+	public HelpPointDto saveHelpPoint(HelpPointDto helpPointDto){
+		HelpPoint helpPoint = new HelpPoint(helpPointDto.getId(),helpPointDto.getName(),helpPointDto.getAddress());
+		HelpPoint helpPointNew = helpPointRepository.save(helpPoint);
+		return new HelpPointDto(helpPointNew.getId(),helpPointNew.getName(),helpPointNew.getAddress());
 	}
 
 }

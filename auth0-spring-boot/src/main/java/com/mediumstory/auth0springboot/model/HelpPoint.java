@@ -25,23 +25,15 @@ public class HelpPoint {
 	@Column(name = "NAME", nullable = false)
 	private String name;
 
-	@Column(name = "LONGITUDE", nullable = false)
-	private BigDecimal longitude;
-
-	@Column(name = "LATITUDE", nullable = false)
-	private BigDecimal latitude;
-
 	@Column(name = "ADDRESS", nullable = false)
 	private String address;
 
 	public HelpPoint() {
 	}
 
-	public HelpPoint(Long id, String name, BigDecimal longitude, BigDecimal latitude, String address) {
+	public HelpPoint(Long id, String name, String address) {
 		this.id = id;
 		this.name = name;
-		this.longitude = longitude;
-		this.latitude = latitude;
 		this.address = address;
 	}
 
@@ -59,22 +51,6 @@ public class HelpPoint {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public BigDecimal getLongitude() {
-		return longitude;
-	}
-
-	public void setLongitude(BigDecimal longitude) {
-		this.longitude = longitude;
-	}
-
-	public BigDecimal getLatitude() {
-		return latitude;
-	}
-
-	public void setLatitude(BigDecimal latitude) {
-		this.latitude = latitude;
 	}
 
 	public String getAddress() {

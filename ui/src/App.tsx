@@ -14,6 +14,7 @@ import Hotels from "./pages/Hotels";
 import Reservations from "./pages/Reservations";
 import Restaurants from "./pages/Restaurants";
 import MenuDetailsManage from "./pages/MenuDetailsManage";
+import OfferHelp from "./pages/OfferHelp";
 
 const { SubMenu } = Menu;
 const {Content, Sider } = Layout;
@@ -40,8 +41,9 @@ const App: React.VFC = () => {
   } = useAuth0();
 
 
-  const [accessToken, setAccessToken] = useState<string>(undefined as unknown as string);
-  const [apiResponseMessage, setAPIResponseMessage] = useState('');
+  const [accessToken, setAccessToken] = useState<string>(undefined as unknown as string)
+  const [apiResponseMessage, setAPIResponseMessage] = useState('')
+  const [showOfferHelp, setShowOfferHelp] = useState(false)
 
 
   useEffect(() => {
@@ -139,9 +141,13 @@ const App: React.VFC = () => {
                               <Link to="/reservations">My reservations</Link>
                             </Menu.Item>}
                         {getRole(accessToken) === "ADMIN" &&
-                        <Menu.Item key="1">
+                        <Menu.Item key="10">
                           <Link to="/menu">Menu</Link>
                         </Menu.Item>}
+                        {getRole(accessToken) === "ADMIN" &&
+                            <Menu.Item key="11">
+                              <Link to="/offerHelp" onClick={()=>setShowOfferHelp(true)}>Offer Help</Link>
+                            </Menu.Item>}
                         {getRole(accessToken) === "HELPER" &&
                             <Menu.Item key="6">Offer help</Menu.Item>}
                       </SubMenu>
@@ -176,6 +182,8 @@ const App: React.VFC = () => {
                         <Route path='/reservations' element={<Reservations/>}/>
                         <Route path='/help' element={<Help/>}/>
                         <Route path='/menu' element={<MenuDetailsManage/>}/>
+                        <Route path='/offerHelp' element={<OfferHelp
+                         close={()=>setShowOfferHelp(false)} visible={showOfferHelp}/>}/>
                       </Routes>
                     </Content>
                   </Layout>

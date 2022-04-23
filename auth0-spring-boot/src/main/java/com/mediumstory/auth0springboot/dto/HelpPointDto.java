@@ -6,18 +6,14 @@ import java.math.BigDecimal;
 public class HelpPointDto implements Serializable {
 	private long id;
 	private String name;
-	private BigDecimal longitude;
-	private BigDecimal latitude;
 	private String address;
 
 	public HelpPointDto() {
 	}
 
-	public HelpPointDto(long id, String name, BigDecimal longitude, BigDecimal latitude, String address) {
+	public HelpPointDto(long id, String name, String address) {
 		this.id = id;
 		this.name = name;
-		this.longitude = longitude;
-		this.latitude = latitude;
 		this.address = address;
 	}
 
@@ -37,22 +33,6 @@ public class HelpPointDto implements Serializable {
 		this.name = name;
 	}
 
-	public BigDecimal getLongitude() {
-		return longitude;
-	}
-
-	public void setLongitude(BigDecimal longitude) {
-		this.longitude = longitude;
-	}
-
-	public BigDecimal getLatitude() {
-		return latitude;
-	}
-
-	public void setLatitude(BigDecimal latitude) {
-		this.latitude = latitude;
-	}
-
 	public String getAddress() {
 		return address;
 	}
@@ -66,8 +46,6 @@ public class HelpPointDto implements Serializable {
 		return "HelpPointDto{" +
 				"id=" + id +
 				", name='" + name + '\'' +
-				", longitude=" + longitude +
-				", latitude=" + latitude +
 				", address='" + address + '\'' +
 				'}';
 	}

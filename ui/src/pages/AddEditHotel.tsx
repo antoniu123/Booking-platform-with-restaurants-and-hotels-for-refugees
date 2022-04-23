@@ -7,11 +7,11 @@ import {Hotel} from "../model/Hotel";
 import {UserContext, UserContextInterface} from "../App";
 
 const onOk = () => {
-    message.success('saving done', 2)
+    message.success('Saving done', 2)
 }
 
 const onError = () => {
-    message.error('error at save', 2)
+    message.error('Error at save', 2)
 }
 
 const onFinish = (values: any) => {
