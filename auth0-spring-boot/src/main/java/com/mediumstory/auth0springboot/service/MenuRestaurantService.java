@@ -1,6 +1,7 @@
 package com.mediumstory.auth0springboot.service;
 
 import com.mediumstory.auth0springboot.dto.MenuRestaurantDto;
+import com.mediumstory.auth0springboot.model.Hotel;
 import com.mediumstory.auth0springboot.model.MenuRestaurant;
 import com.mediumstory.auth0springboot.model.Restaurant;
 import com.mediumstory.auth0springboot.repository.MenuRestaurantRepository;

@@ -1,12 +1,15 @@
 package com.mediumstory.auth0springboot.controller;
 
 import com.mediumstory.auth0springboot.dto.OrderDto;
+import com.mediumstory.auth0springboot.dto.OrderLineDto;
+import com.mediumstory.auth0springboot.dto.ReservationDto;
 import com.mediumstory.auth0springboot.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;

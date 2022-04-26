@@ -1,13 +1,14 @@
 package com.mediumstory.auth0springboot.service;
 
-import com.nimbusds.jose.shaded.json.JSONArray;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import com.nimbusds.jose.shaded.json.JSONArray;
+
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.stereotype.Service;
 
 @Service
 public class JwtService {

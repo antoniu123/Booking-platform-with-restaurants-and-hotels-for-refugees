@@ -74,7 +74,7 @@ public class OrderService {
 			final MenuRestaurant menuRestaurant = menuRestaurantRepository.findMenuRestaurantByName(orderLineDto.getMenuRestaurantName());
 			return new OrderLine(orderLineDto.getId(), order, menuRestaurant, orderLineDto.getQuantity(), orderLineDto.getPrice());
 		}).collect(Collectors.toList());
-		final Float totalPrice = orderLines.stream().map(OrderLine::getPrice).reduce(0f, Float::sum);
+		final Float totalPrice = orderLines.stream().map(ol->ol.getQuantity()*ol.getPrice()).reduce(0f, Float::sum);
 		order.setOrderLines(orderLines);
 		order.setPrice(totalPrice);
 		final Order newOrder = orderRepository.save(order);

@@ -1,6 +1,8 @@
 package com.mediumstory.auth0springboot.service;
 
+import com.mediumstory.auth0springboot.dto.HotelDto;
 import com.mediumstory.auth0springboot.dto.RestaurantDto;
+import com.mediumstory.auth0springboot.model.Hotel;
 import com.mediumstory.auth0springboot.model.Restaurant;
 import com.mediumstory.auth0springboot.repository.RestaurantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
