@@ -1,14 +1,16 @@
 package com.mediumstory.auth0springboot.service;
 
 import com.mediumstory.auth0springboot.dto.MenuRestaurantDto;
-import com.mediumstory.auth0springboot.model.Hotel;
 import com.mediumstory.auth0springboot.model.MenuRestaurant;
+import com.mediumstory.auth0springboot.model.Restaurant;
 import com.mediumstory.auth0springboot.repository.MenuRestaurantRepository;
 import com.mediumstory.auth0springboot.repository.RestaurantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,12 +26,15 @@ public class MenuRestaurantService {
 		this.restaurantRepository = restaurantRepository;
 	}
 
-	public MenuRestaurantDto getMenuForId(Long id){
-		MenuRestaurant menuRestaurant = menuRestaurantRepository.findById(id).orElseGet(MenuRestaurant::new);
-		return new MenuRestaurantDto(menuRestaurant.getId(),
-				menuRestaurant.getRestaurant().getName(),
-				menuRestaurant.getName(),menuRestaurant.getPrice(),
-				menuRestaurant.getImage());
+	public List<MenuRestaurantDto> getMenuForId(Long restaurantId){
+		Optional<Restaurant> restaurant = restaurantRepository.findById(restaurantId);
+		return restaurant.map(value -> menuRestaurantRepository.findAllByRestaurant(value).stream()
+				.map(m -> new MenuRestaurantDto(m.getId(),
+						m.getRestaurant().getName(),
+						m.getName(), m.getPrice(),
+						m.getImage()))
+						.collect(Collectors.toList()))
+				.orElse(Collections.EMPTY_LIST);
 	}
 
 	public List<MenuRestaurantDto> getAllMenuItemsFromAllRestaurants(){

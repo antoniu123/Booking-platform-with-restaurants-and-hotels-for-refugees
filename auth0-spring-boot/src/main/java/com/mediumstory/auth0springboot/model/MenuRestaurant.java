@@ -65,6 +65,17 @@ public class MenuRestaurant {
 		this.restaurant = restaurant;
 	}
 
+	@Override
+	public String toString() {
+		return "MenuRestaurant{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", restaurant=" + restaurant +
+				", price=" + price +
+				", image='" + image + '\'' +
+				'}';
+	}
+
 	public Float getPrice() {
 		return price;
 	}

@@ -1,7 +1,6 @@
 package com.mediumstory.auth0springboot.controller;
 
 import com.mediumstory.auth0springboot.dto.HelpPointDto;
-import com.mediumstory.auth0springboot.model.HelpPoint;
 import com.mediumstory.auth0springboot.service.HelpPointService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin("*")

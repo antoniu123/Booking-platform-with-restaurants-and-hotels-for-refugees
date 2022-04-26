@@ -28,7 +28,7 @@ public class ReservationController {
 	}
 
 	@PostMapping(value = "/reservation", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<ReservationDto> saveHotel(@RequestBody ReservationDto reservationDto) throws SQLException {
+	public ResponseEntity<ReservationDto> saveReservation(@RequestBody ReservationDto reservationDto) throws SQLException {
 		return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.saveReservation(reservationDto));
 	}
 

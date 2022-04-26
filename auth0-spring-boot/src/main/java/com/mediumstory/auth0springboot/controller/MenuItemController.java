@@ -1,6 +1,5 @@
 package com.mediumstory.auth0springboot.controller;
 
-import com.mediumstory.auth0springboot.dto.HotelDto;
 import com.mediumstory.auth0springboot.dto.MenuRestaurantDto;
 import com.mediumstory.auth0springboot.service.MenuRestaurantService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +29,9 @@ public class MenuItemController {
 		this.menuRestaurantService = menuRestaurantService;
 	}
 
-	@GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<MenuRestaurantDto> getMenuForId(@PathVariable Long id) throws SQLException {
-		return ResponseEntity.status(HttpStatus.OK).body(menuRestaurantService.getMenuForId(id));
+	@GetMapping(value = "/{restaurantId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<MenuRestaurantDto>> getMenuForId(@PathVariable Long restaurantId) throws SQLException {
+		return ResponseEntity.status(HttpStatus.OK).body(menuRestaurantService.getMenuForId(restaurantId));
 	}
 
 	@GetMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)

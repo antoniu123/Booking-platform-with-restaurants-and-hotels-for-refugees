@@ -1,7 +1,6 @@
 package com.mediumstory.auth0springboot.dto;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 public class HelpPointDto implements Serializable {
 	private long id;
