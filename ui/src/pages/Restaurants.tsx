@@ -142,18 +142,18 @@ const Restaurants: React.FC = () => {
                         </Button>
                     }
                     <Table dataSource={restaurantState.context.restaurants} columns={columns}/>
-                    <AddEditRestaurant key={restaurantId}
+                    {addEditVisible && <AddEditRestaurant key={restaurantId}
                                        restaurantId={restaurantId}
                                   visible={addEditVisible}
                                   onSubmit={() => setAddEditVisible(false)}
                                   onCancel={() => setAddEditVisible(false)}
                                   onRefresh={() => refresh()}
-                    />
-                    <ViewRestaurant key={restaurantId}
+                    />}
+                    {detailVisible && <ViewRestaurant key={restaurantId}
                                restaurantId={restaurantId}
                                visible={detailVisible}
                                onCancel={() => setDetailVisible(false)}
-                    />
+                    />}
                 </>
             )}
 
@@ -350,7 +350,6 @@ const createRestaurantMachine = (userContext: UserContextInterface | null, ) => 
                         return Promise.reject(err)
                     })
             },
-            loadRestaurant: (context, _) => getRestaurantById(context.restaurant.id, userContext),
             loadMenuData: (id, event) => {
                 if (event.type === 'DETAIL'){
                     const token = userContext ? userContext.accessToken : ''
@@ -375,22 +374,3 @@ const createRestaurantMachine = (userContext: UserContextInterface | null, ) => 
         }
     }
 )
-
-
-function getRestaurantById(id: number,userContext: UserContextInterface | null): Promise<Restaurant | string> {
-    if (id === undefined || id === null) {
-        return Promise.reject("some error")
-    } else if (id === 0) {
-        const restaurant = {
-            id: 0,
-            name: '',
-            image: ''
-        }
-        return Promise.resolve(restaurant)
-    } else{
-        const token = userContext ? userContext.accessToken : ''
-        return axios.get(`http://${process.env.REACT_APP_SERVER_NAME}/restaurants/${id}`,{headers: {"Authorization": `Bearer ${token}`,
-                "Content-Type": "application/json"} })
-    }
-
-}
