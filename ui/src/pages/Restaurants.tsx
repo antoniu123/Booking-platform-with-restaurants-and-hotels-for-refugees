@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useRef, useState} from "react";
 import {assign, Machine} from "xstate";
 import axios from "axios";
 import {useMachine} from "@xstate/react";
@@ -9,6 +9,8 @@ import {MenuRestaurant} from "../model/MenuRestaurant";
 import {Hotel} from "../model/Hotel";
 import AddEditRestaurant from "./AddEditRestaurant";
 import ViewRestaurant from "./ViewRestaurant";
+import {Order} from "../model/Order";
+import PickQuantity from "./PickQuantity";
 
 
 const Restaurants: React.FC = () => {
@@ -18,6 +20,8 @@ const Restaurants: React.FC = () => {
     const [restaurantId, setRestaurantId] = useState(0);
     const [addEditVisible, setAddEditVisible] = useState(false);
     const [detailVisible, setDetailVisible] = useState(false);
+    const [pickVisible, setPickVisible] = useState(false);
+    const currentProduct = useRef({} as MenuRestaurant)
 
     const refresh = () => {
         send({
@@ -81,7 +85,7 @@ const Restaurants: React.FC = () => {
             hidden: value?.role.toString() !== "USER",
             render: (record: Restaurant) => (
                 <Button hidden={value?.role.toString() !== "USER"} onClick={() => {
-                    send({type:'DETAIL', payload:{restaurant: record}})
+                    send({type: 'DETAIL', payload: {restaurant: record}})
                 }
                 }> Menu Details </Button>
             )
@@ -96,11 +100,6 @@ const Restaurants: React.FC = () => {
             key: 'id',
         },
         {
-            title: 'Restaurant name',
-            dataIndex: 'restaurantName',
-            key: 'restaurantName',
-        },
-        {
             title: 'Order name',
             dataIndex: 'name',
             key: 'name',
@@ -113,15 +112,30 @@ const Restaurants: React.FC = () => {
         {
             title: 'image',
             key: 'image',
-            render:  (record:MenuRestaurant) => <img src={record.image}  alt={"img"}/>
-
+            render: (record: MenuRestaurant) => <img src={record.image} alt={"img"}/>
         },
+        {
+            title: 'Pick',
+            key: 'pick',
+            hidden: value?.role.toString() !== "USER",
+            render: (record: MenuRestaurant) => (
+                <Button hidden={value?.role.toString() !== "USER"} onClick={() => {
+                    setPickVisible(true)
+                    currentProduct.current = record
+                    send("PICK");
+                }
+                }> Pick </Button>
+            )
+        }
     ];
 
     return (
-        <div>
+        <>
             {(restaurantState.matches('loadingRestaurantData') ||
-                restaurantState.matches('loadingMenuData')) && (
+                restaurantState.matches('loadingMenuData') ||
+                restaurantState.matches('deletingRestaurantData') ||
+                restaurantState.matches('deletingRestaurantData') ||
+                restaurantState.matches('submitOrder')) && (
                 <>
                     <Spin>
                         <Alert message="Please wait for loading" type="info"/>
@@ -141,18 +155,18 @@ const Restaurants: React.FC = () => {
                         }>Add
                         </Button>
                     }
-                    <Table dataSource={restaurantState.context.restaurants} columns={columns}/>
+                    <Table rowKey="id" dataSource={restaurantState.context.restaurants} columns={columns}/>
                     {addEditVisible && <AddEditRestaurant key={restaurantId}
-                                       restaurantId={restaurantId}
-                                  visible={addEditVisible}
-                                  onSubmit={() => setAddEditVisible(false)}
-                                  onCancel={() => setAddEditVisible(false)}
-                                  onRefresh={() => refresh()}
+                                                          restaurantId={restaurantId}
+                                                          visible={addEditVisible}
+                                                          onSubmit={() => setAddEditVisible(false)}
+                                                          onCancel={() => setAddEditVisible(false)}
+                                                          onRefresh={() => refresh()}
                     />}
                     {detailVisible && <ViewRestaurant key={restaurantId}
-                               restaurantId={restaurantId}
-                               visible={detailVisible}
-                               onCancel={() => setDetailVisible(false)}
+                                                      restaurantId={restaurantId}
+                                                      visible={detailVisible}
+                                                      onCancel={() => setDetailVisible(false)}
                     />}
                 </>
             )}
@@ -174,12 +188,44 @@ const Restaurants: React.FC = () => {
 
             {restaurantState.matches('loadMenuItemsResolved') && (
                 <>
-                    <Modal maskClosable={false} footer={null} visible={true} onCancel={()=>
-                        send({type:'CANCEL_DETAIL'})}
-                        >
-                        <p className={"center_text"}>These are our menu options</p>
-                        <Table dataSource={restaurantState.context.menuOptions} columns={columnsDetail}/>
+                    <Modal maskClosable={false} footer={null} visible={true} onCancel={() =>
+                        send({type: 'CANCEL_DETAIL'})}
+                    >
+                        <p className={"center_text"}>These are our menu options for {restaurantState.context.menuOptions && restaurantState.context.menuOptions.length > 0
+                                ? restaurantState.context.menuOptions[0].restaurantName
+                                : ''}
+                        </p>
+                        <Table rowKey="id" dataSource={restaurantState.context.menuOptions} columns={columnsDetail}/>
+                        {(restaurantState.context.currentOrder &&
+                            restaurantState.context.currentOrder.orderLines &&
+                            restaurantState.context.currentOrder.orderLines.length > 0) &&
+                            <>
+                                <Button>Save Order</Button>
+                                <Button>Send Order</Button>
+                            </>
+                        }
                     </Modal>
+                </>
+            )}
+
+            {restaurantState.matches('pickOrder') && (
+                <>
+                    {pickVisible && <PickQuantity
+                        key={restaurantState.context.currentOrder.id ? restaurantState.context.currentOrder.id : 0}
+                        order={restaurantState.context.currentOrder}
+                        product={currentProduct.current}
+                        visible={pickVisible}
+                        onOk={(order: Order) => {
+                            send({type: 'SAVE', payload: {order: order}})
+                            setPickVisible(false)
+                            console.log("order ->",order)
+                        }}
+                        onCancel={() => {
+                            setPickVisible(false)
+                            send({type: 'CANCEL_PICK'})
+                            currentProduct.current = {} as MenuRestaurant
+                        }}
+                    />}
                 </>
             )}
 
@@ -197,7 +243,7 @@ const Restaurants: React.FC = () => {
                     />
                 </>
             )}
-        </div>
+        </>
     )
 
 }
@@ -208,6 +254,7 @@ interface RestaurantMachineContext {
     restaurant: Restaurant
     restaurants: Array<Restaurant>
     menuOptions: Array<MenuRestaurant>
+    currentOrder?: Order
 }
 
 interface RestaurantMachineSchema {
@@ -220,16 +267,23 @@ interface RestaurantMachineSchema {
         loadMenuItemsResolved: {}
         loadMenuItemsRejected: {}
         deletingRestaurantData: {}
+        pickOrder: {}
+        saveOrder: {}
+        submitOrder: {}
     }
 }
 
 type RestaurantMachineEvent = | { type: 'RETRY' }
     | { type: 'CANCEL' }
     | { type: 'CANCEL_DETAIL' }
+    | { type: 'CANCEL_PICK' }
     | { type: 'DETAIL'; payload: { restaurant: Restaurant } }
     | { type: 'DELETE'; payload: { restaurantId: number } }
+    | { type: 'PICK'; payload: { restaurantId: number } }
+    | { type: 'SAVE'; payload: { order: Order } }
+    | { type: 'SUBMIT_ORDER'; payload: { order: Order } }
 
-const createRestaurantMachine = (userContext: UserContextInterface | null, ) => Machine<RestaurantMachineContext, RestaurantMachineSchema, RestaurantMachineEvent>(
+const createRestaurantMachine = (userContext: UserContextInterface | null,) => Machine<RestaurantMachineContext, RestaurantMachineSchema, RestaurantMachineEvent>(
     {
         id: 'restaurant-machine',
         context: {
@@ -269,7 +323,7 @@ const createRestaurantMachine = (userContext: UserContextInterface | null, ) => 
                     DETAIL: {
                         target: 'loadingMenuData'
                     },
-                    DELETE:{
+                    DELETE: {
                         target: 'deletingRestaurantData'
                     }
                 }
@@ -289,7 +343,8 @@ const createRestaurantMachine = (userContext: UserContextInterface | null, ) => 
                         actions: assign((context, event) => {
                             return {
                                 ...context,
-                                menuOptions: event.data.data
+                                menuOptions: event.data[0].data,
+                                currentOrder: event.data[1].data.length > 0 ? event.data[1].data[0] : {} as Order
                             }
                         })
                     },
@@ -305,6 +360,12 @@ const createRestaurantMachine = (userContext: UserContextInterface | null, ) => 
                     },
                     CANCEL_DETAIL: {
                         target: 'loadRestaurantDataResolved'
+                    },
+                    PICK: {
+                        target: 'pickOrder'
+                    },
+                    SUBMIT_ORDER: {
+                        target: 'submitOrder'
                     }
                 }
             },
@@ -326,7 +387,40 @@ const createRestaurantMachine = (userContext: UserContextInterface | null, ) => 
                         target: 'loadingRestaurantData'
                     }
                 }
-            }
+            },
+            pickOrder: {
+                on: {
+                    SAVE: {
+                        target: 'saveOrder'
+                    },
+                    CANCEL_PICK: {
+                        target: 'loadMenuItemsResolved'
+                    }
+                }
+            },
+            saveOrder: {
+                entry: 'saveOrder',
+                always: {target: 'loadMenuItemsResolved'}
+            },
+            submitOrder: {
+                invoke: {
+                    src: 'sendOrder',
+                    onDone: {
+                        target: 'loadingRestaurantData',
+                        actions: assign((context, event) => {
+                            return {
+                                ...context,
+                                menuOptions: event.data[0].data,
+                                currentOrder: event.data[1].data
+                            }
+                        })
+                    },
+                    onError: {
+                        target: 'loadMenuItemsResolved'
+                    }
+                }
+            },
+
         }
     },
     {
@@ -335,6 +429,12 @@ const createRestaurantMachine = (userContext: UserContextInterface | null, ) => 
                 return {
                     ...context,
                     restaurant: {} as Restaurant
+                }
+            }),
+            saveOrder: assign((context, event) => {
+                return {
+                    ...context,
+                    currentOrder: event.type === 'SAVE' ? event.payload.order : context.currentOrder
                 }
             })
         },
@@ -351,13 +451,22 @@ const createRestaurantMachine = (userContext: UserContextInterface | null, ) => 
                     })
             },
             loadMenuData: (id, event) => {
-                if (event.type === 'DETAIL'){
+                if (event.type === 'DETAIL') {
                     const token = userContext ? userContext.accessToken : ''
                     const url = `http://${process.env.REACT_APP_SERVER_NAME}/menuRestaurant/${event.payload.restaurant.id}`
-                    return axios.get(url, {headers: {"Authorization": `Bearer ${token}`,
-                            "Content-Type": "application/json"} })
-                }
-                else
+                    return Promise.all([axios.get(url, {
+                        headers: {
+                            "Authorization": `Bearer ${token}`,
+                            "Content-Type": "application/json"
+                        }
+                    }), axios.get(`http://${process.env.REACT_APP_SERVER_NAME}/orders/new`,
+                        {
+                            headers: {
+                                "Authorization": `Bearer ${token}`,
+                                "Content-Type": "application/json"
+                            }
+                        })])
+                } else
                     return Promise.resolve(() => 'error')
             },
             deleteRestaurantData: (id, event) => {

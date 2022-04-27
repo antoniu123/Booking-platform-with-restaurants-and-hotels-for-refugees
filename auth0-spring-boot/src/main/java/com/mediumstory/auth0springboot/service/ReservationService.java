@@ -30,7 +30,7 @@ public class ReservationService {
 
 		Reservation reservation = new Reservation(reservationDto.getId(), hotelRepository.findHotelByName(reservationDto.getHotelName()),
 													reservationDto.getDateIn(),reservationDto.getDateOut(),
-													reservationDto.getValid(), jwtService.getUser());
+													reservationDto.getValid(), jwtService.getUserId());
 		Reservation reservationNew = reservationRepository.save(reservation);
 
 		return new ReservationDto(reservationNew.getId(), reservationNew.getHotel().getName(),

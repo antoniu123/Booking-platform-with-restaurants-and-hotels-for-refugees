@@ -44,7 +44,7 @@ public class OrderService {
 
 	public List<OrderDto> findAllNewOrders() {
 		return orderRepository.findAll().stream()
-				.filter(order -> Objects.equals(order.getStatus(), "NEW"))
+				.filter(order -> Objects.equals(order.getStatus(), "NEW") && order.getUserId().equals(jwtService.getUserId()))
 				.map(o -> {
 					List<OrderLineDto> orderLineDtoList = o.getOrderLines().stream()
 							.map(ol -> new OrderLineDto(ol.getId(), ol.getMenuRestaurant().getName(), ol.getQuantity(), ol.getPrice()))
@@ -69,7 +69,7 @@ public class OrderService {
 	public OrderDto addOrUpdateOrder(final OrderDto orderDto) {
 		final Restaurant restaurant = restaurantRepository.findRestaurantByName(orderDto.getRestaurantName());
 		final Order order = new Order(orderDto.getId(), restaurant,
-				orderDto.getStatus(), orderDto.getPrice(), null, jwtService.getUser());
+				orderDto.getStatus(), orderDto.getPrice(), null, jwtService.getUserId());
 		final List<OrderLine> orderLines = orderDto.getOrderLines().stream().map(orderLineDto -> {
 			final MenuRestaurant menuRestaurant = menuRestaurantRepository.findMenuRestaurantByName(orderLineDto.getMenuRestaurantName());
 			return new OrderLine(orderLineDto.getId(), order, menuRestaurant, orderLineDto.getQuantity(), orderLineDto.getPrice());

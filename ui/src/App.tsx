@@ -121,7 +121,7 @@ const App: React.VFC = () => {
                         mode="inline"
                         style={{ height: '100%', borderRight: 0 }}
                     >
-                      <Menu.Item key="8">
+                      <Menu.Item key="0">
                         <Link to="/">Home</Link>
                       </Menu.Item>
                       <SubMenu key="sub1" icon={<DashboardOutlined />} title="Dashboard">

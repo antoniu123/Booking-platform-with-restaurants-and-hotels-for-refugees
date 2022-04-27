@@ -25,7 +25,7 @@ public class JwtService {
         return exampleList;
     }
 
-    public String getUser(){
+    public String getUserId(){
         JwtAuthenticationToken authenticationToken = (JwtAuthenticationToken) SecurityContextHolder.getContext()
                 .getAuthentication();
         return authenticationToken.getTokenAttributes()

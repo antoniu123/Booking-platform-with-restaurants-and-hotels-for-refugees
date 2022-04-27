@@ -1,4 +1,4 @@
-export interface OrderLine{
+export interface OrderLine {
     id: number,
     menuRestaurantName: string,
     quantity: number,
