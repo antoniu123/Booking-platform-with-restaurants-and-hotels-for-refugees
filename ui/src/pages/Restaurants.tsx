@@ -29,6 +29,16 @@ const Restaurants: React.FC = () => {
         })
     }
 
+    const getQuantityFromOrderForProductId = (restaurantName:string,  order: Order|undefined, product: MenuRestaurant)  => {
+        if (!order) {
+            return 0
+        }
+        if (order.restaurantName === restaurantName && order.orderLines.map(ol=>ol.menuRestaurantName).includes(product.name)){
+            return order.orderLines.filter(ol=>ol.menuRestaurantName===product.name).map(ol=>ol.quantity)[0]
+        }
+        return 0
+    }
+
     const columns = [
         {
             title: '#',
@@ -126,16 +136,22 @@ const Restaurants: React.FC = () => {
                 }
                 }> Pick </Button>
             )
+        },
+        {
+            title: 'Qty',
+            render: (record: MenuRestaurant) => (
+                <p>{getQuantityFromOrderForProductId(record.restaurantName, restaurantState.context.currentOrder, record)}</p>
+            )
         }
-    ];
+    ].filter(item => !item.hidden);
 
     return (
         <>
             {(restaurantState.matches('loadingRestaurantData') ||
                 restaurantState.matches('loadingMenuData') ||
                 restaurantState.matches('deletingRestaurantData') ||
-                restaurantState.matches('deletingRestaurantData') ||
-                restaurantState.matches('submitOrder')) && (
+                restaurantState.matches('savingOrder') ||
+                restaurantState.matches('submitingOrder')) && (
                 <>
                     <Spin>
                         <Alert message="Please wait for loading" type="info"/>
@@ -200,8 +216,15 @@ const Restaurants: React.FC = () => {
                             restaurantState.context.currentOrder.orderLines &&
                             restaurantState.context.currentOrder.orderLines.length > 0) &&
                             <>
-                                <Button>Save Order</Button>
-                                <Button>Send Order</Button>
+                                <Button onClick={()=>{
+                                    send({type: 'SAVE', payload: {order: restaurantState.context.currentOrder}})
+                                }
+                                }>Save Order</Button>
+                                {restaurantState.context.currentOrder.id &&
+                                <Button onClick={()=>{
+                                    send({type: 'SUBMIT_ORDER', payload: {order: restaurantState.context.currentOrder}})
+                                }
+                                }>Submit Order</Button>}
                             </>
                         }
                     </Modal>
@@ -216,7 +239,7 @@ const Restaurants: React.FC = () => {
                         product={currentProduct.current}
                         visible={pickVisible}
                         onOk={(order: Order) => {
-                            send({type: 'SAVE', payload: {order: order}})
+                            send({type: 'UPDATE', payload: {order: order}})
                             setPickVisible(false)
                             console.log("order ->",order)
                         }}
@@ -268,8 +291,9 @@ interface RestaurantMachineSchema {
         loadMenuItemsRejected: {}
         deletingRestaurantData: {}
         pickOrder: {}
-        saveOrder: {}
-        submitOrder: {}
+        updatingOrder: {}
+        savingOrder: {}
+        submitingOrder: {}
     }
 }
 
@@ -280,6 +304,7 @@ type RestaurantMachineEvent = | { type: 'RETRY' }
     | { type: 'DETAIL'; payload: { restaurant: Restaurant } }
     | { type: 'DELETE'; payload: { restaurantId: number } }
     | { type: 'PICK'; payload: { restaurantId: number } }
+    | { type: 'UPDATE'; payload: { order: Order } }
     | { type: 'SAVE'; payload: { order: Order } }
     | { type: 'SUBMIT_ORDER'; payload: { order: Order } }
 
@@ -289,7 +314,8 @@ const createRestaurantMachine = (userContext: UserContextInterface | null,) => M
         context: {
             restaurant: {} as Restaurant,
             restaurants: [],
-            menuOptions: []
+            menuOptions: [],
+            currentOrder: {} as Order
         },
         initial: 'loadingRestaurantData',
         on: {
@@ -365,7 +391,10 @@ const createRestaurantMachine = (userContext: UserContextInterface | null,) => M
                         target: 'pickOrder'
                     },
                     SUBMIT_ORDER: {
-                        target: 'submitOrder'
+                        target: 'submitingOrder'
+                    },
+                    SAVE: {
+                        target: 'savingOrder'
                     }
                 }
             },
@@ -390,30 +419,34 @@ const createRestaurantMachine = (userContext: UserContextInterface | null,) => M
             },
             pickOrder: {
                 on: {
-                    SAVE: {
-                        target: 'saveOrder'
+                    UPDATE: {
+                        target: 'updatingOrder'
                     },
                     CANCEL_PICK: {
                         target: 'loadMenuItemsResolved'
                     }
                 }
             },
-            saveOrder: {
-                entry: 'saveOrder',
+            updatingOrder: {
+                entry: 'updateOrder',
                 always: {target: 'loadMenuItemsResolved'}
             },
-            submitOrder: {
+            savingOrder: {
+                invoke: {
+                    src: 'saveOrder',
+                    onDone: {
+                        target: 'loadMenuItemsResolved'
+                    },
+                    onError: {
+                        target: 'loadMenuItemsResolved'
+                    }
+                }
+            },
+            submitingOrder: {
                 invoke: {
                     src: 'sendOrder',
                     onDone: {
-                        target: 'loadingRestaurantData',
-                        actions: assign((context, event) => {
-                            return {
-                                ...context,
-                                menuOptions: event.data[0].data,
-                                currentOrder: event.data[1].data
-                            }
-                        })
+                        target: 'loadingRestaurantData'
                     },
                     onError: {
                         target: 'loadMenuItemsResolved'
@@ -431,10 +464,10 @@ const createRestaurantMachine = (userContext: UserContextInterface | null,) => M
                     restaurant: {} as Restaurant
                 }
             }),
-            saveOrder: assign((context, event) => {
+            updateOrder: assign((context, event) => {
                 return {
                     ...context,
-                    currentOrder: event.type === 'SAVE' ? event.payload.order : context.currentOrder
+                    currentOrder: event.type === 'UPDATE' ? event.payload.order : context.currentOrder
                 }
             })
         },
@@ -450,7 +483,7 @@ const createRestaurantMachine = (userContext: UserContextInterface | null,) => M
                         return Promise.reject(err)
                     })
             },
-            loadMenuData: (id, event) => {
+            loadMenuData: (context, event) => {
                 if (event.type === 'DETAIL') {
                     const token = userContext ? userContext.accessToken : ''
                     const url = `http://${process.env.REACT_APP_SERVER_NAME}/menuRestaurant/${event.payload.restaurant.id}`
@@ -459,7 +492,7 @@ const createRestaurantMachine = (userContext: UserContextInterface | null,) => M
                             "Authorization": `Bearer ${token}`,
                             "Content-Type": "application/json"
                         }
-                    }), axios.get(`http://${process.env.REACT_APP_SERVER_NAME}/orders/new`,
+                    }), axios.get(`http://${process.env.REACT_APP_SERVER_NAME}/orders/restaurant/${event.payload.restaurant.id}/new`,
                         {
                             headers: {
                                 "Authorization": `Bearer ${token}`,
@@ -479,6 +512,26 @@ const createRestaurantMachine = (userContext: UserContextInterface | null,) => M
                     .catch((err) => {
                         return Promise.reject(err)
                     })
+            },
+            saveOrder: (id, event) => {
+                if (event.type === 'SAVE'){
+                    const token = userContext ? userContext.accessToken : ''
+                    const url = `http://${process.env.REACT_APP_SERVER_NAME}/orders/order`
+                    return axios.post(url, event.payload.order, {headers: {"Authorization": `Bearer ${token}`,
+                            "Content-Type": "application/json"} })
+                }
+                else
+                    return Promise.resolve(() => 'error')
+            },
+            sendOrder: (id, event) => {
+                if (event.type === 'SUBMIT_ORDER'){
+                    const token = userContext ? userContext.accessToken : ''
+                    const url = `http://${process.env.REACT_APP_SERVER_NAME}/orders/${event.payload.order.id}/send`
+                    return axios.post(url, {}, {headers: {"Authorization": `Bearer ${token}`,
+                            "Content-Type": "application/json"} })
+                }
+                else
+                    return Promise.resolve(() => 'error')
             }
         }
     }

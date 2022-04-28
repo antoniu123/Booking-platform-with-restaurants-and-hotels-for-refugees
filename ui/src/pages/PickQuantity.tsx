@@ -58,7 +58,7 @@ const PickQuantity: React.VFC<PickQuantityProps> = ({order, product, visible, on
                                   qty: undefined
                               }}>
                             <Form.Item label="Quantity" name="qty">
-                                <InputNumber min={1} max={10}/>
+                                <InputNumber min={0} max={10}/>
                             </Form.Item>
                         </Form>
                     </Card>

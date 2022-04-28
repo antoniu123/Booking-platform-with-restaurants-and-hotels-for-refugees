@@ -41,6 +41,11 @@ public class OrderController {
 		return ResponseEntity.status(HttpStatus.OK).body(orderService.findAllNewOrders());
 	}
 
+	@GetMapping(value = "/restaurant/{restaurantId}/new", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<OrderDto>> getNewOrdersForRestaurantId(@PathVariable Long restaurantId) throws SQLException {
+		return ResponseEntity.status(HttpStatus.OK).body(orderService.findAllNewOrdersForRestaurantId(restaurantId));
+	}
+
 	@GetMapping(value = "/{orderId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<OrderDto> getOrderById(@PathVariable Long orderId) throws SQLException {
 		return ResponseEntity.status(HttpStatus.OK).body(orderService.getOrderById(orderId));
@@ -51,9 +56,9 @@ public class OrderController {
 		return ResponseEntity.status(HttpStatus.OK).body(orderService.findAllCompletedOrders());
 	}
 
-	@PostMapping(value = "/send", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Void> sendOrder(@RequestBody OrderDto orderDto) throws SQLException {
-		orderService.sendOrder(orderDto);
+	@PostMapping(value = "/{orderId}/send", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Void> sendOrder(@PathVariable Long orderId) throws SQLException {
+		orderService.sendOrder(orderId);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 }

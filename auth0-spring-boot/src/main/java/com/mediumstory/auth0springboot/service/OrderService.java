@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,6 +55,20 @@ public class OrderService {
 				.collect(Collectors.toList());
 	}
 
+	public List<OrderDto> findAllNewOrdersForRestaurantId(Long restaurantId) {
+		return orderRepository.findAll().stream()
+				.filter(order -> Objects.equals(order.getStatus(), "NEW") &&
+						         order.getRestaurant().getId().equals(restaurantId) &&
+						         order.getUserId().equals(jwtService.getUserId()))
+				.map(o -> {
+					List<OrderLineDto> orderLineDtoList = o.getOrderLines().stream()
+							.map(ol -> new OrderLineDto(ol.getId(), ol.getMenuRestaurant().getName(), ol.getQuantity(), ol.getPrice()))
+							.collect(Collectors.toList());
+					return new OrderDto(o.getId(), o.getRestaurant().getName(), o.getStatus(), o.getPrice(), orderLineDtoList, o.getUserId());
+				})
+				.collect(Collectors.toList());
+	}
+
 	public List<OrderDto> findAllCompletedOrders() {
 		return orderRepository.findAll().stream()
 				.filter(order -> Objects.equals(order.getStatus(), "COMPLETED"))
@@ -70,7 +85,17 @@ public class OrderService {
 		final Restaurant restaurant = restaurantRepository.findRestaurantByName(orderDto.getRestaurantName());
 		final Order order = new Order(orderDto.getId(), restaurant,
 				orderDto.getStatus(), orderDto.getPrice(), null, jwtService.getUserId());
-		final List<OrderLine> orderLines = orderDto.getOrderLines().stream().map(orderLineDto -> {
+		final List<OrderLine> orderLines = orderDto.getOrderLines().stream()
+				//delete if one line has 0 qty
+				.map(ol->{
+					if (ol.getQuantity()==0){
+						orderLineRepository.findById(ol.getId()).ifPresent(orderLineRepository::delete);
+						return null;
+					}
+					return ol;
+				 })
+				.filter(Objects::nonNull)
+				.map(orderLineDto -> {
 			final MenuRestaurant menuRestaurant = menuRestaurantRepository.findMenuRestaurantByName(orderLineDto.getMenuRestaurantName());
 			return new OrderLine(orderLineDto.getId(), order, menuRestaurant, orderLineDto.getQuantity(), orderLineDto.getPrice());
 		}).collect(Collectors.toList());
@@ -92,8 +117,8 @@ public class OrderService {
 				orderLineDtoList, order.getUserId());
 	}
 
-	public void sendOrder(final OrderDto orderDto) {
-		final Order order = orderRepository.getById(orderDto.getId());
+	public void sendOrder(final Long orderId) {
+		final Order order = orderRepository.getById(orderId);
 		order.setStatus("COMPLETED");
 		orderRepository.save(order);
 	}
