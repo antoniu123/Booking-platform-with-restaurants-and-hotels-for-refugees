@@ -16,6 +16,8 @@ import Restaurants from "./pages/Restaurants";
 import MenuDetailsManage from "./pages/MenuDetailsManage";
 import OfferHelp from "./pages/OfferHelp";
 import CustomerSupport from "./pages/CustomerSupport";
+import Orders from "./pages/Orders";
+import EditProfile from "./pages/EditProfile";
 
 const { SubMenu } = Menu;
 const {Content, Sider } = Layout;
@@ -43,7 +45,7 @@ const App: React.VFC = () => {
 
 
   const [accessToken, setAccessToken] = useState<string>(undefined as unknown as string)
-  const [apiResponseMessage, setAPIResponseMessage] = useState('')
+  const [, setAPIResponseMessage] = useState('')
   const [showOfferHelp, setShowOfferHelp] = useState(false)
   const [showCustomerSupport, setShowCustomerSupport] = useState(false)
 
@@ -68,28 +70,28 @@ const App: React.VFC = () => {
     await loginWithPopup()
   }
 
-  const securedAPITest = () => {
-    if (accessToken)
-      fetch("http://localhost:8080/auth0/private", {
-        method: "GET",
-        headers: new Headers({
-          Authorization: "Bearer " + accessToken,
-          "Content-Type": "application/json",
-        }),
-      })
-        .then(function (res) {
-          return res.json();
-        })
-        .then(function (resJson) {
-          //console.log(resJson)
-          setAPIResponseMessage(resJson.message);
-        })
-        .catch((e) => console.log(e));
-    else {
-      console.warn("no token")
-    }    
-
-  };
+  // const securedAPITest = () => {
+  //   if (accessToken)
+  //     fetch("http://localhost:8080/auth0/private", {
+  //       method: "GET",
+  //       headers: new Headers({
+  //         Authorization: "Bearer " + accessToken,
+  //         "Content-Type": "application/json",
+  //       }),
+  //     })
+  //       .then(function (res) {
+  //         return res.json();
+  //       })
+  //       .then(function (resJson) {
+  //         //console.log(resJson)
+  //         setAPIResponseMessage(resJson.message);
+  //       })
+  //       .catch((e) => console.log(e));
+  //   else {
+  //     console.warn("no token")
+  //   }
+  //
+  // };
 
   const getRole = (token:string|undefined) => {
     if (!token)
@@ -142,24 +144,30 @@ const App: React.VFC = () => {
                             <Menu.Item key="4">
                               <Link to="/reservations">My reservations</Link>
                             </Menu.Item>}
+                        {getRole(accessToken) === "USER" &&
+                            <Menu.Item key="5">
+                              <Link to="/orders">My completed orders</Link>
+                            </Menu.Item>}
                         {getRole(accessToken) === "ADMIN" &&
-                        <Menu.Item key="5">
+                        <Menu.Item key="6">
                           <Link to="/menu">Menu</Link>
                         </Menu.Item>}
                         {getRole(accessToken) === "ADMIN" &&
-                            <Menu.Item key="6">
+                            <Menu.Item key="7">
                               <Link to="/offerHelp" onClick={()=>setShowOfferHelp(true)}>Offer Help</Link>
                             </Menu.Item>}
                       </SubMenu>
                       {getRole(accessToken) === "USER" &&
-                          <Menu.Item key="7" icon={<FormOutlined/>} >
+                          <Menu.Item key="8" icon={<FormOutlined/>} >
                             <Link to="/support" onClick={()=>setShowCustomerSupport(true)}>Customer support</Link>
                           </Menu.Item>}
                       {getRole(accessToken) === "USER" &&
-                          <SubMenu key="8" icon={<Avatar size={"small"} style={{ backgroundColor: '#87d068' }} icon={<UserOutlined/>} />} title="Profile">
-                            <Menu.Item key="9">Edit profile</Menu.Item>
+                          <SubMenu key="9" icon={<Avatar size={"small"} style={{ backgroundColor: '#87d068' }} icon={<UserOutlined/>} />} title="Profile">
+                            <Menu.Item>
+                              <Link to="/editProfile" >Edit profile</Link>
+                            </Menu.Item>
                           </SubMenu>}
-                      <Menu.Item key="10" onClick={()=>logout({ returnTo: window.location.origin })}>Logout</Menu.Item>
+                      <Menu.Item key="11" onClick={()=>logout({ returnTo: window.location.origin })}>Logout</Menu.Item>
                     </Menu>
                   </Sider>
                   <Layout style={{ padding: '0 24px 24px' }}>
@@ -186,8 +194,10 @@ const App: React.VFC = () => {
                         <Route path='/menu' element={<MenuDetailsManage/>}/>
                         <Route path='/support' element={<CustomerSupport close={()=>setShowCustomerSupport(false)}
                                                                          visible={showCustomerSupport}/>}/>
+                        <Route path='/orders' element={<Orders/>}/>
                         <Route path='/offerHelp' element={<OfferHelp
                          close={()=>setShowOfferHelp(false)} visible={showOfferHelp}/>}/>
+                        <Route path='/editProfile' element={<EditProfile />}/>
                       </Routes>
                     </Content>
                   </Layout>

@@ -2,7 +2,7 @@ import React, {useRef, useState} from "react";
 import {assign, Machine} from "xstate";
 import axios from "axios";
 import {useMachine} from "@xstate/react";
-import {Alert, Button, Modal, Result, Spin, Table} from 'antd';
+import {Alert, Button, message, Modal, Result, Spin, Table} from 'antd';
 import {UserContext, UserContextInterface} from "../App";
 import {Restaurant} from "../model/Restaurant";
 import {MenuRestaurant} from "../model/MenuRestaurant";
@@ -216,6 +216,7 @@ const Restaurants: React.FC = () => {
                             restaurantState.context.currentOrder.orderLines &&
                             restaurantState.context.currentOrder.orderLines.length > 0) &&
                             <>
+                                <p> Total Price {restaurantState.context.currentOrder.price} </p>
                                 <Button onClick={()=>{
                                     send({type: 'SAVE', payload: {order: restaurantState.context.currentOrder}})
                                 }
@@ -223,6 +224,7 @@ const Restaurants: React.FC = () => {
                                 {restaurantState.context.currentOrder.id &&
                                 <Button onClick={()=>{
                                     send({type: 'SUBMIT_ORDER', payload: {order: restaurantState.context.currentOrder}})
+                                    message.info('Your order has been placed');
                                 }
                                 }>Submit Order</Button>}
                             </>

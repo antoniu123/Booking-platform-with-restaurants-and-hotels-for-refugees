@@ -55,7 +55,9 @@ const PickQuantity: React.VFC<PickQuantityProps> = ({order, product, visible, on
                         <Form form={form} labelCol={{span: 8}}
                               wrapperCol={{span: 16}}
                               initialValues={{
-                                  qty: undefined
+                                  qty: order.orderLines? order.orderLines.filter(ol => ol.menuRestaurantName === product.name).length > 0
+                                      ? order.orderLines.filter(ol => ol.menuRestaurantName === product.name).map(ol=>ol.quantity)[0]
+                                      : undefined : 0
                               }}>
                             <Form.Item label="Quantity" name="qty">
                                 <InputNumber min={0} max={10}/>
