@@ -31,8 +31,13 @@ public class MenuItemController {
 	}
 
 	@GetMapping(value = "/{restaurantId}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<MenuRestaurantDto>> getMenuForId(@PathVariable Long restaurantId) throws SQLException {
-		return ResponseEntity.status(HttpStatus.OK).body(menuRestaurantService.getMenuForId(restaurantId));
+	public ResponseEntity<List<MenuRestaurantDto>> getMenuForRestaurantId(@PathVariable Long restaurantId) throws SQLException {
+		return ResponseEntity.status(HttpStatus.OK).body(menuRestaurantService.getMenuForRestaurantId(restaurantId));
+	}
+
+	@GetMapping(value = "/menu/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<MenuRestaurantDto> getMenuForId(@PathVariable Long id) throws SQLException {
+		return ResponseEntity.status(HttpStatus.OK).body(menuRestaurantService.getMenuForId(id));
 	}
 
 	@GetMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)

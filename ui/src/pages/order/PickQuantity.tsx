@@ -1,7 +1,8 @@
-import {Order} from "../model/Order";
+import {Order} from "../../model/Order";
 import {Card, Form, InputNumber, Modal} from "antd";
-import {OrderLine} from "../model/OrderLine";
-import {MenuRestaurant} from "../model/MenuRestaurant";
+import {OrderLine} from "../../model/OrderLine";
+import {MenuRestaurant} from "../../model/MenuRestaurant";
+import {displayNotification} from "../../shared/displayNotification";
 
 interface PickQuantityProps {
     order: Order
@@ -48,6 +49,7 @@ const PickQuantity: React.VFC<PickQuantityProps> = ({order, product, visible, on
                            onOk(myOrder)
                            form.resetFields()
                        }
+                       displayNotification('Info','Saving has been done', 1)
                    }}
             >
                 <div>

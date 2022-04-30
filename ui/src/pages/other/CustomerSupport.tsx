@@ -84,7 +84,7 @@ const CustomerSupport: React.VFC<CustomerSupportProps> = ({visible,close}) => {
                     </button>} style={{ width: 300 }}>
                         <label style={h1StylesLabel}>From Name:</label><input key="from_name" style={h1StylesInput} type="text" name="from_name" />
 
-                        <label style={h1StylesLabel}>To Email:</label><input key="to_name" style={h1StylesInput} type="email" name="to_name" />
+                        <label hidden={true} style={h1StylesLabel}>To Email:</label><input hidden={true} defaultValue={"bogdan.antoniu1999@gmail.com"} key="to_name" style={h1StylesInput} type="email" name="to_name" />
 
                         <label style={h1StylesLabel}>Message:</label><textarea key="message" style={h1StylesInput} rows={4} name="message" />
                     </Card>

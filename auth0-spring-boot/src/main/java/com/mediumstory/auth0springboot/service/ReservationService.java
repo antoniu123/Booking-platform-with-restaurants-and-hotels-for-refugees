@@ -7,6 +7,7 @@ import com.mediumstory.auth0springboot.repository.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,10 +40,28 @@ public class ReservationService {
 	}
 
 	public List<ReservationDto> getReservations(){
-		return reservationRepository.findAll().stream().filter(r->r.getValid().equals(1))
-				.map(reservation->new ReservationDto(reservation.getId(),
-						reservation.getHotel().getName(), reservation.getDateIn(), reservation.getDateOut(),
-						reservation.getValid(), reservation.getUserId()))
-				.collect(Collectors.toList());
+		List<String>  roles = jwtService.getRoles();
+		if (roles.contains("ADMIN")){
+			return reservationRepository.findAll().stream().filter(r->r.getValid().equals(1))
+					.map(reservation->new ReservationDto(reservation.getId(),
+							reservation.getHotel().getName(), reservation.getDateIn(), reservation.getDateOut(),
+							reservation.getValid(), reservation.getUserId()))
+					.collect(Collectors.toList());
+		}
+		else {
+			return reservationRepository.findAll().stream()
+					.filter(r->r.getValid().equals(1) && r.getUserId().equals(jwtService.getUserId()))
+					.map(reservation->new ReservationDto(reservation.getId(),
+							reservation.getHotel().getName(), reservation.getDateIn(), reservation.getDateOut(),
+							reservation.getValid(), reservation.getUserId()))
+					.collect(Collectors.toList());
+		}
+	}
+
+	@Transactional
+	public void cancelReservation(Long id) {
+		final Reservation reservation = reservationRepository.getById(id);
+		reservation.setValid(0);
+		reservationRepository.save(reservation);
 	}
 }

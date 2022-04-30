@@ -1,23 +1,23 @@
 import "./App.css";
-import React, {useState, useEffect} from "react";
-import { useAuth0 } from "@auth0/auth0-react";
+import React, {useEffect, useState} from "react";
+import {useAuth0} from "@auth0/auth0-react";
 import configData from "./config.json";
 import {Avatar, Button, Layout, Menu, Spin} from "antd";
 import {DashboardOutlined, FormOutlined, LoadingOutlined, UserOutlined} from '@ant-design/icons'
 import jwtDecode from "jwt-decode"
-import { TokenDecoded } from "./model/TokenDecoded";
-import {Home} from "./Home";
-import {Route, Routes, Link} from 'react-router-dom'
-import {Help} from "./pages/Help";
-import { User } from '@auth0/auth0-spa-js';
-import Hotels from "./pages/Hotels";
-import Reservations from "./pages/Reservations";
-import Restaurants from "./pages/Restaurants";
-import MenuDetailsManage from "./pages/MenuDetailsManage";
-import OfferHelp from "./pages/OfferHelp";
-import CustomerSupport from "./pages/CustomerSupport";
-import Orders from "./pages/Orders";
-import EditProfile from "./pages/EditProfile";
+import {TokenDecoded} from "./model/TokenDecoded";
+import {Home} from "./pages/Home";
+import {Link, Route, Routes} from 'react-router-dom'
+import {Help} from "./pages/help/Help";
+import {User} from '@auth0/auth0-spa-js';
+import Hotels from "./pages/hotel/Hotels";
+import Reservations from "./pages/hotel/Reservations";
+import Restaurants from "./pages/restaurant/Restaurants";
+import MenuDetailsManage from "./pages/order/MenuDetailsManage";
+import OfferHelp from "./pages/help/OfferHelp";
+import CustomerSupport from "./pages/other/CustomerSupport";
+import Orders from "./pages/order/Orders";
+import EditProfile from "./pages/other/EditProfile";
 
 const { SubMenu } = Menu;
 const {Content, Sider } = Layout;
@@ -69,29 +69,6 @@ const App: React.VFC = () => {
   const login = async () =>{
     await loginWithPopup()
   }
-
-  // const securedAPITest = () => {
-  //   if (accessToken)
-  //     fetch("http://localhost:8080/auth0/private", {
-  //       method: "GET",
-  //       headers: new Headers({
-  //         Authorization: "Bearer " + accessToken,
-  //         "Content-Type": "application/json",
-  //       }),
-  //     })
-  //       .then(function (res) {
-  //         return res.json();
-  //       })
-  //       .then(function (resJson) {
-  //         //console.log(resJson)
-  //         setAPIResponseMessage(resJson.message);
-  //       })
-  //       .catch((e) => console.log(e));
-  //   else {
-  //     console.warn("no token")
-  //   }
-  //
-  // };
 
   const getRole = (token:string|undefined) => {
     if (!token)
@@ -149,25 +126,33 @@ const App: React.VFC = () => {
                               <Link to="/orders">My completed orders</Link>
                             </Menu.Item>}
                         {getRole(accessToken) === "ADMIN" &&
-                        <Menu.Item key="6">
+                            <Menu.Item key="6">
+                              <Link to="/reservations">Reservations</Link>
+                            </Menu.Item>}
+                        {getRole(accessToken) === "ADMIN" &&
+                            <Menu.Item key="7">
+                              <Link to="/orders">Completed orders</Link>
+                            </Menu.Item>}
+                        {getRole(accessToken) === "ADMIN" &&
+                        <Menu.Item key="8">
                           <Link to="/menu">Menu</Link>
                         </Menu.Item>}
                         {getRole(accessToken) === "ADMIN" &&
-                            <Menu.Item key="7">
+                            <Menu.Item key="9">
                               <Link to="/offerHelp" onClick={()=>setShowOfferHelp(true)}>Offer Help</Link>
                             </Menu.Item>}
                       </SubMenu>
                       {getRole(accessToken) === "USER" &&
-                          <Menu.Item key="8" icon={<FormOutlined/>} >
+                          <Menu.Item key="10" icon={<FormOutlined/>} >
                             <Link to="/support" onClick={()=>setShowCustomerSupport(true)}>Customer support</Link>
                           </Menu.Item>}
                       {getRole(accessToken) === "USER" &&
-                          <SubMenu key="9" icon={<Avatar size={"small"} style={{ backgroundColor: '#87d068' }} icon={<UserOutlined/>} />} title="Profile">
+                          <SubMenu key="11" icon={<Avatar size={"small"} style={{ backgroundColor: '#87d068' }} icon={<UserOutlined/>} />} title="Profile">
                             <Menu.Item>
                               <Link to="/editProfile" >Edit profile</Link>
                             </Menu.Item>
                           </SubMenu>}
-                      <Menu.Item key="11" onClick={()=>logout({ returnTo: window.location.origin })}>Logout</Menu.Item>
+                      <Menu.Item key="12" onClick={()=>logout({ returnTo: window.location.origin })}>Logout</Menu.Item>
                     </Menu>
                   </Sider>
                   <Layout style={{ padding: '0 24px 24px' }}>

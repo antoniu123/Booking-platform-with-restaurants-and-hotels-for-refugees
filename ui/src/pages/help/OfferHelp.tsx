@@ -1,8 +1,9 @@
 import axios from "axios";
-import {UserContext, UserContextInterface} from "../App";
+import {UserContext, UserContextInterface} from "../../App";
 import React from "react";
 import {Form, Input, message, Modal} from "antd";
-import {HelpPoint} from "../model/HelpPoint";
+import {HelpPoint} from "../../model/HelpPoint";
+import {displayNotification} from "../../shared/displayNotification";
 
 interface OfferHelpProps {
     visible:boolean,
@@ -38,6 +39,7 @@ const OfferHelp: React.VFC<OfferHelpProps> = ({visible,close}) => {
                visible={visible}
                onOk={() => {
                    submit()
+                   displayNotification('Info','Saving has been done', 1)
                }               }
                onCancel={close}
         >

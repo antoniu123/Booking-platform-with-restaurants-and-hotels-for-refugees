@@ -17,6 +17,10 @@ public class MenuRestaurantDto implements Serializable {
 		this.image = image;
 	}
 
+	public MenuRestaurantDto() {
+
+	}
+
 	public long getId() {
 		return id;
 	}

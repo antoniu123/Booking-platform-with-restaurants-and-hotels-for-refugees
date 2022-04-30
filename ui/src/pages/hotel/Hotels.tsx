@@ -3,12 +3,17 @@ import {assign, Machine} from "xstate";
 import axios from "axios";
 import {useMachine} from "@xstate/react";
 import {Alert, Button, DatePicker, Form, Modal, Result, Spin, Table} from 'antd';
-import {Hotel} from "../model/Hotel";
+import {Hotel} from "../../model/Hotel";
 import AddEditHotel from "./AddEditHotel";
 import ViewHotel from "./ViewHotel";
-import {UserContext, UserContextInterface} from "../App";
-import {Reservation} from "../model/Reservation";
+import {UserContext, UserContextInterface} from "../../App";
+import {Reservation} from "../../model/Reservation";
+import moment from "moment";
+import {displayNotification} from "../../shared/displayNotification";
 
+function disabledDate(current:any) {
+    return current && current < moment().endOf('day');
+}
 
 const Hotels: React.FC = () => {
 
@@ -83,6 +88,7 @@ const Hotels: React.FC = () => {
                         send({
                             type: 'DELETE', payload: {hotelId: record.id}
                         })
+                        displayNotification('Info','Saving has been done', 1)
                     }
                 }> Delete </Button>
             )
@@ -135,6 +141,7 @@ const Hotels: React.FC = () => {
                             () => {
                                 setHotelId(0)
                                 setAddEditVisible(true)
+                                displayNotification('Info','Saving has been done', 1)
                             }
                         }>Add
                         </Button>
@@ -197,7 +204,7 @@ const Hotels: React.FC = () => {
                             label="Arriving Date"
                             rules={[{ required: true, message: "Please select arriving date!"}]}
                         >
-                            <DatePicker />
+                            <DatePicker format="YYYY-MM-DD" disabledDate={disabledDate}/>
                         </Form.Item>
                         <Form.Item
                             key={hotelState.context.reservation.dateOut? hotelState.context.reservation.dateOut : 2}
@@ -215,7 +222,7 @@ const Hotels: React.FC = () => {
                             ]}
 
                         >
-                            <DatePicker />
+                            <DatePicker format="YYYY-MM-DD" disabledDate={disabledDate}/>
                         </Form.Item>
 
                     </Form>

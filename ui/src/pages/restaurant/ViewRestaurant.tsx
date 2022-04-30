@@ -3,52 +3,45 @@ import {useMachine} from "@xstate/react";
 import {Button, Form, Image, Modal, Result, Spin} from "antd";
 import {assign, Machine} from "xstate";
 import axios from "axios";
-import {Hotel} from "../model/Hotel";
-import {UserContext, UserContextInterface} from "../App";
+import {Restaurant} from "../../model/Restaurant";
+import {UserContext, UserContextInterface} from "../../App";
 
-interface ViewHotelProps {
-    hotelId: number
+interface ViewRestaurantProps {
+    restaurantId: number
     visible: boolean
     onCancel: () => void
 }
 
-const ViewHotel: React.FC<ViewHotelProps> = ({hotelId, visible,onCancel}) => {
+const ViewRestaurant: React.FC<ViewRestaurantProps> = ({restaurantId, visible,onCancel}) => {
     const value: UserContextInterface | null = React.useContext(UserContext)
 
-    const [hotelState, send] = useMachine(
-        createHotelViewMachine(
+    const [restaurantState, send] = useMachine(
+        createRestaurantViewMachine(
             value,
-            hotelId
+            restaurantId
         )
     )
 
     return (
         <>
-            {hotelState.matches('loadingHotel') && (
+            {restaurantState.matches('loadingRestaurant') && (
                 <div>
                     <Spin/>
                 </div>
             )}
 
-            {hotelState.matches('loadHotelDone') && (
+            {restaurantState.matches('loadRestaurantDone') && (
                 <div>
                     <Modal maskClosable={false} visible={visible} footer={null} onCancel={onCancel}>
                         <Form>
                             <Form.Item label="Name" style={{width: '100%', justifyContent: 'center'}}>
-                                    {hotelState.context.hotel.name}
-                            </Form.Item>
-                            <Form.Item label="Zone" style={{width: '100%', justifyContent: 'center'}}>
-                                    {hotelState.context.hotel.zone}
-                            </Form.Item>
-                            <Form.Item label="Number of rooms" style={{width: '100%', justifyContent: 'center'}}>
-                                    {hotelState.context.hotel.nr_rooms}
+                                    {restaurantState.context.restaurant.name}
                             </Form.Item>
                             <Form.Item style={{width: '100%', justifyContent: 'center'}}>
                                 <Image
                                     width="480px"
-                                    height="240px"
-                                    src={process.env.PUBLIC_URL + '/' + hotelState.context.hotel.image}
-                                    alt={hotelState.context.hotel.image}
+                                    src={process.env.PUBLIC_URL + '/' + restaurantState.context.restaurant.image}
+                                    alt={restaurantState.context.restaurant.image}
                                     preview={false}
                                 />
                             </Form.Item>
@@ -58,7 +51,7 @@ const ViewHotel: React.FC<ViewHotelProps> = ({hotelId, visible,onCancel}) => {
                 </div>
             )}
 
-            {hotelState.matches('loadHotelRejected') && (
+            {restaurantState.matches('loadRestaurantRejected') && (
                 <div>
                     <Modal maskClosable={false} visible={visible} onCancel={() => onCancel()} footer={null}>
                         <Result
@@ -78,71 +71,70 @@ const ViewHotel: React.FC<ViewHotelProps> = ({hotelId, visible,onCancel}) => {
 
 }
 
-export default ViewHotel
+export default ViewRestaurant
 
-interface ViewHotelMachineContext {
-    hotel: Hotel
+interface ViewRestaurantMachineContext {
+    restaurant: Restaurant
 }
 
-interface ViewHotelMachineSchema {
-    context: ViewHotelMachineContext
+interface ViewRestaurantMachineSchema {
+    context: ViewRestaurantMachineContext
     states: {
-        loadingHotel: {}
-        loadHotelDone: {}
-        loadHotelRejected: {}
+        loadingRestaurant: {}
+        loadRestaurantDone: {}
+        loadRestaurantRejected: {}
     }
 }
 
-type ViewHotelMachineEvent = | { type: 'RETRY' } | { type: 'TOOGLE' }
+type ViewRestaurantMachineEvent = | { type: 'RETRY' } | { type: 'TOOGLE' }
 
-const createHotelViewMachine = (userContext: UserContextInterface | null, hotelId: number) =>
-    Machine<ViewHotelMachineContext, ViewHotelMachineSchema, ViewHotelMachineEvent>(
+const createRestaurantViewMachine = (userContext: UserContextInterface | null, restaurantId: number) =>
+    Machine<ViewRestaurantMachineContext, ViewRestaurantMachineSchema, ViewRestaurantMachineEvent>(
         {
-            id: 'view-hotel-machine',
+            id: 'view-restaurant-machine',
             context: {
-                hotel: {
+                restaurant: {
                     id: 0,
                     name: '',
-                    zone: '',
-                    nr_rooms: 0
+                    image: ''
                 }
             },
-            initial: 'loadingHotel',
+            initial: 'loadingRestaurant',
             states: {
-                loadingHotel: {
+                loadingRestaurant: {
                     invoke: {
-                        id: 'loadingHotel',
-                        src: 'loadHotel',
+                        id: 'loadingRestaurant',
+                        src: 'loadRestaurant',
                         onDone: {
-                            target: 'loadHotelDone',
+                            target: 'loadRestaurantDone',
                             actions: assign((context, event) => {
                                 if (event.data.data)
                                     return {
-                                        hotel: event.data.data
+                                        restaurant: event.data.data
                                     }
                                 else
                                     return {
-                                        hotel: event.data
+                                        restaurant: event.data
                                     }
 
                             })
                         },
                         onError: {
-                            target: 'loadHotelRejected'
+                            target: 'loadRestaurantRejected'
                         }
                     }
                 },
-                loadHotelDone: {
+                loadRestaurantDone: {
                     on: {
                         RETRY: {
-                            target: 'loadingHotel'
+                            target: 'loadingRestaurant'
                         }
                     }
                 },
-                loadHotelRejected: {
+                loadRestaurantRejected: {
                     on: {
                         RETRY: {
-                            target: 'loadingHotel'
+                            target: 'loadingRestaurant'
                         }
                     }
                 }
@@ -150,25 +142,24 @@ const createHotelViewMachine = (userContext: UserContextInterface | null, hotelI
         },
         {
             services: {
-                loadHotel: () => getHotelById(hotelId, userContext)
+                loadRestaurant: () => getRestaurantById(restaurantId, userContext)
             }
         }
     )
 
-function getHotelById(id: number, userContext: UserContextInterface | null): Promise<Hotel | string> {
+function getRestaurantById(id: number, userContext: UserContextInterface | null): Promise<Restaurant | string> {
     if (id === undefined || id === null) {
         return Promise.reject("some error")
     } else if (id === 0) {
-        const hotel = {
+        const restaurant = {
             id: 0,
             name: '',
-            zone: '',
-            nr_rooms: 0
-        } as Hotel
-        return Promise.resolve(hotel)
+            image: ''
+        } as Restaurant
+        return Promise.resolve(restaurant)
     } else {
         const token = userContext ? userContext.accessToken : ''
-        return axios.get(`http://${process.env.REACT_APP_SERVER_NAME}/hotels/${id}`, {
+        return axios.get(`http://${process.env.REACT_APP_SERVER_NAME}/restaurants/${id}`, {
             headers: {
                 "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json"

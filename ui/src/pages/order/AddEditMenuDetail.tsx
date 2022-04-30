@@ -1,11 +1,12 @@
 import React from "react";
 import {useMachine} from "@xstate/react";
-import {Button, Form, Input, message, Modal, Result, Select, Spin,} from "antd";
+import {Button, Form, Input, InputNumber, message, Modal, Result, Select, Spin,} from "antd";
 import {assign, Machine} from "xstate";
 import axios from "axios";
-import {MenuRestaurant} from "../model/MenuRestaurant";
-import {UserContext, UserContextInterface} from "../App";
-import {Restaurant} from "../model/Restaurant";
+import {MenuRestaurant} from "../../model/MenuRestaurant";
+import {UserContext, UserContextInterface} from "../../App";
+import {Restaurant} from "../../model/Restaurant";
+import {displayNotification} from "../../shared/displayNotification";
 
 const { Option } = Select;
 
@@ -81,7 +82,9 @@ const AddEditMenuDetail: React.FC<AddEditMenuRestaurantProps> = ({menuRestaurant
                                            }
                                        }
                                    )
+
                                    onSubmit()
+                                   displayNotification('Info','Saving has been done', 1)
                                }
                                }
                                onCancel={onCancel}
@@ -93,6 +96,7 @@ const AddEditMenuDetail: React.FC<AddEditMenuRestaurantProps> = ({menuRestaurant
                                 labelCol={{span: 8}}
                                 wrapperCol={{span: 16}}
                                 initialValues={{
+                                    id: menuRestaurantState.context.menuRestaurant.id,
                                     restaurantName: menuRestaurantState.context.menuRestaurant.restaurantName,
                                     name: menuRestaurantState.context.menuRestaurant.name,
                                     price: menuRestaurantState.context.menuRestaurant.price,
@@ -103,11 +107,17 @@ const AddEditMenuDetail: React.FC<AddEditMenuRestaurantProps> = ({menuRestaurant
                                 autoComplete="off"
                             >
                                 <Form.Item
+                                    name="id"
+                                    hidden
+                                >
+                                    <InputNumber/>
+                                </Form.Item>
+                                <Form.Item
                                     label="Restaurant name"
                                     name="restaurantName"
                                     rules={[{required: true, message: 'Please input restaurant name'}]}
                                 >
-                                    <Select
+                                    <Select disabled={menuRestaurantState.context.menuRestaurant.id}
                                     >
                                         {menuRestaurantState.context.restaurantNames.map((name:string, index:number) => {
                                             return (
@@ -281,6 +291,9 @@ const createMenuRestaurantMachine = (userContext:UserContextInterface|null,
             }
         },
         {
+            delays:{
+                TIME_WAITING: 250
+            },
             actions: {
                 callOk: () => {
                     onOk()
@@ -323,7 +336,7 @@ function getMenuRestaurantById(id: number,userContext: UserContextInterface | nu
         return Promise.resolve(menuRestaurant)
     } else{
         const token = userContext ? userContext.accessToken : ''
-        return axios.get(`http://${process.env.REACT_APP_SERVER_NAME}/menuRestaurant/${id}`,{headers: {"Authorization": `Bearer ${token}`,
+        return axios.get(`http://${process.env.REACT_APP_SERVER_NAME}/menuRestaurant/menu/${id}`,{headers: {"Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json"} })
     }
 }

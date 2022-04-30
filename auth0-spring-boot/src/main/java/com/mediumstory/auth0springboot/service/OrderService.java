@@ -70,15 +70,29 @@ public class OrderService {
 	}
 
 	public List<OrderDto> findAllCompletedOrders() {
-		return orderRepository.findAll().stream()
-				.filter(order -> Objects.equals(order.getStatus(), "COMPLETED"))
-				.map(o -> {
-					List<OrderLineDto> orderLineDtoList = o.getOrderLines().stream()
-							.map(ol -> new OrderLineDto(ol.getId(), ol.getMenuRestaurant().getName(), ol.getQuantity(), ol.getPrice()))
-							.collect(Collectors.toList());
-					return new OrderDto(o.getId(), o.getRestaurant().getName(), o.getStatus(), o.getPrice(), orderLineDtoList, o.getUserId());
-				})
-				.collect(Collectors.toList());
+		if(jwtService.getRoles().contains("ADMIN")){
+			return orderRepository.findAll().stream()
+					.filter(order -> Objects.equals(order.getStatus(), "COMPLETED"))
+					.map(o -> {
+						List<OrderLineDto> orderLineDtoList = o.getOrderLines().stream()
+								.map(ol -> new OrderLineDto(ol.getId(), ol.getMenuRestaurant().getName(), ol.getQuantity(), ol.getPrice()))
+								.collect(Collectors.toList());
+						return new OrderDto(o.getId(), o.getRestaurant().getName(), o.getStatus(), o.getPrice(), orderLineDtoList, o.getUserId());
+					})
+					.collect(Collectors.toList());
+		}
+		else{
+			return orderRepository.findAll().stream()
+					.filter(order -> Objects.equals(order.getStatus(), "COMPLETED") && order.getUserId().equals(jwtService.getUserId()))
+					.map(o -> {
+						List<OrderLineDto> orderLineDtoList = o.getOrderLines().stream()
+								.map(ol -> new OrderLineDto(ol.getId(), ol.getMenuRestaurant().getName(), ol.getQuantity(), ol.getPrice()))
+								.collect(Collectors.toList());
+						return new OrderDto(o.getId(), o.getRestaurant().getName(), o.getStatus(), o.getPrice(), orderLineDtoList, o.getUserId());
+					})
+					.collect(Collectors.toList());
+		}
+
 	}
 
 	public OrderDto addOrUpdateOrder(final OrderDto orderDto) {

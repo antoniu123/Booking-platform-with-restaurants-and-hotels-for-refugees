@@ -2,10 +2,11 @@ import React, {useState} from "react";
 import {assign, Machine} from "xstate";
 import axios from "axios";
 import {useMachine} from "@xstate/react";
-import {Alert, Button , Result, Spin, Table} from 'antd';
-import {MenuRestaurant} from "../model/MenuRestaurant";
-import {UserContext, UserContextInterface} from "../App";
+import {Alert, Button, Result, Spin, Table} from 'antd';
+import {MenuRestaurant} from "../../model/MenuRestaurant";
+import {UserContext, UserContextInterface} from "../../App";
 import AddEditMenuDetail from "./AddEditMenuDetail";
+import {displayNotification} from "../../shared/displayNotification";
 
 
 const MenuDetailsManage: React.FC = () => {
@@ -71,6 +72,7 @@ const MenuDetailsManage: React.FC = () => {
                         send({
                             type: 'DELETE', payload: {menuRestaurantId: record.id}
                         })
+                        displayNotification('Info','Saving has been done', 1)
                     }
                 }> Delete </Button>
             )
@@ -80,7 +82,6 @@ const MenuDetailsManage: React.FC = () => {
     return (
         <div>
             {(menuRestaurantState.matches('loadingMenuRestaurantData') ||
-              menuRestaurantState.matches('savingMenuRestaurant') ||
                 menuRestaurantState.matches('deletingMenuRestaurantData')) && (
                 <>
                     <Spin>
@@ -102,7 +103,8 @@ const MenuDetailsManage: React.FC = () => {
                         </Button>
                     }
                     <Table dataSource={menuRestaurantState.context.menuRestaurants} columns={columns}/>
-                    <AddEditMenuDetail key={menuRestaurantId}
+                    <AddEditMenuDetail
+                                  key={menuRestaurantId}
                                   menuRestaurantId={menuRestaurantId}
                                   visible={addEditVisible}
                                   onSubmit={() => setAddEditVisible(false)}
@@ -218,7 +220,7 @@ const createMenuRestaurantMachine = (userContext: UserContextInterface | null) =
             loadMenuRestaurantData: () => {
                 const token = userContext ? userContext.accessToken : ''
                 const url = `http://${process.env.REACT_APP_SERVER_NAME}/menuRestaurant/all`
-                return async () => axios
+                return axios
                     .get(url, {headers: {"Authorization": `Bearer ${token}`, "Content-Type": "application/json"}})
                     .then((ret) => Promise.resolve(ret)
                     )
@@ -229,7 +231,7 @@ const createMenuRestaurantMachine = (userContext: UserContextInterface | null) =
             deleteMenuRestaurantData: (id, event) => {
                 const token = userContext ? userContext.accessToken : ''
                 const url = `http://${process.env.REACT_APP_SERVER_NAME}/menuRestaurant/delete/${event.type === 'DELETE' ? event.payload.menuRestaurantId : 0}`
-                return async () => axios
+                return axios
                     .delete(url, {headers: {"Authorization": `Bearer ${token}`, "Content-Type": "application/json"}})
                     .then((ret) => Promise.resolve(ret)
                     )

@@ -1,9 +1,9 @@
 import {Table} from "antd";
 import axios from "axios";
 import React, {useEffect, useState} from "react";
-import {UserContext, UserContextInterface} from "../App";
+import {UserContext, UserContextInterface} from "../../App";
 import {User} from "@auth0/auth0-spa-js";
-import {Order} from "../model/Order";
+import {Order} from "../../model/Order";
 
 const Orders: React.VFC = () => {
     const value: UserContextInterface | null = React.useContext(UserContext)

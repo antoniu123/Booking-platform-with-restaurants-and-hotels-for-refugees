@@ -1,8 +1,9 @@
 import axios from "axios";
-import {UserContext, UserContextInterface} from "../App";
+import {UserContext, UserContextInterface} from "../../App";
 import React, {useState} from "react";
 import {
-    Alert, Avatar,
+    Alert,
+    Avatar,
     Button,
     Card,
     Col,
@@ -12,15 +13,15 @@ import {
     InputNumber,
     message,
     Modal,
-    notification,
     Result,
     Row,
     Spin
 } from "antd";
-import {Profile} from "../model/Profile";
+import {Profile} from "../../model/Profile";
 import {assign, Machine} from "xstate";
 import {useMachine} from "@xstate/react";
 import {UserOutlined} from "@ant-design/icons";
+import {displayNotification} from "../../shared/displayNotification";
 
 const myAvailablePictures: string[] = ['1.png', '2.jpg', '3.png', '4.jpg']
 
@@ -30,6 +31,7 @@ const EditProfile: React.VFC = () => {
     const [profileState, send] = useMachine(createProfileMachine(value))
     const [form] = Form.useForm()
     const [imageSelector, setImageSelector] = useState(false)
+    const [currentImage,setCurrentImage] = useState(profileState.context.profile.image);
 
     const onFinish = () => {
         if (form.getFieldValue("nickname") === undefined) {
@@ -43,21 +45,11 @@ const EditProfile: React.VFC = () => {
         }
         send({type: 'SAVE', payload: {profile: profile}})
         form.resetFields()
-        const args = {
-            message: 'Info',
-            description: "saving is done",
-            duration: 1,
-        };
-        notification.success(args);
+        displayNotification('Info','Saving has been done', 1)
     }
 
     const onFinishFailed = (errorInfo: any) => {
-        const args = {
-            message: 'Error',
-            description: errorInfo,
-            duration: 1,
-        };
-        notification.error(args);
+        displayNotification('Error',errorInfo, 1)
     }
 
     return (
@@ -78,10 +70,9 @@ const EditProfile: React.VFC = () => {
                         cover={<>  {profileState.context.profile?.image ?
                                    <img alt="avatar" src={profileState.context.profile?.image}
                                     onClick={() => setImageSelector(true)}/> :
-                                    <>
-                                        <Avatar size={"large"} style={{backgroundColor: '#87d068'}}
+                                    <Avatar shape={'square'} size={"large"} style={{backgroundColor: '#87d068'}}
                                             icon={<UserOutlined onClick={() => setImageSelector(true)}/>}/>
-                                    </>
+
                                     }
                                </>}
                     >
@@ -146,9 +137,19 @@ const EditProfile: React.VFC = () => {
                             <Row gutter={[16, 16]}>
                                 {myAvailablePictures.map((current: string, index: number, pictures: string[]) => (
                                     <Col key={index} xs={{span: 6, offset: 1}} lg={{span: 4, offset: 1}}>
-                                        <Image width={50} preview={false} key={index} src={current} onClick={() => {
-                                            form.setFieldsValue({image: current})
-                                        }}/>
+                                        <div style={ currentImage===current ? {
+                                            backgroundColor: 'blue',
+                                            width: '50px',
+                                            height: '65px'
+                                        }: {backgroundColor: 'white',
+                                            width: '50px',
+                                            height: '65px'}}>
+                                            <Image className= 'flex-auto'
+                                                   width={50} preview={false} key={index} src={current} onClick={() => {
+                                                setCurrentImage(current)
+                                                form.setFieldsValue({image: current})
+                                            }}/>
+                                        </div>
                                     </Col>
                                 ))}
                             </Row>

@@ -1,11 +1,11 @@
 import React from "react";
-import {HelpPoint} from "../model/HelpPoint";
+import {HelpPoint} from "../../model/HelpPoint";
 import {assign, Machine} from "xstate";
 import axios from "axios";
 import {useMachine} from "@xstate/react";
 import {Alert, Button, Result, Spin} from "antd";
 import {LoadingOutlined} from "@ant-design/icons";
-import {UserContext, UserContextInterface} from '../App'
+import {UserContext, UserContextInterface} from '../../App'
 import Geocode from "./Geocode";
 
 

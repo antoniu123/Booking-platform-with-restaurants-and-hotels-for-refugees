@@ -3,14 +3,15 @@ import {assign, Machine} from "xstate";
 import axios from "axios";
 import {useMachine} from "@xstate/react";
 import {Alert, Button, message, Modal, Result, Spin, Table} from 'antd';
-import {UserContext, UserContextInterface} from "../App";
-import {Restaurant} from "../model/Restaurant";
-import {MenuRestaurant} from "../model/MenuRestaurant";
-import {Hotel} from "../model/Hotel";
+import {UserContext, UserContextInterface} from "../../App";
+import {Restaurant} from "../../model/Restaurant";
+import {MenuRestaurant} from "../../model/MenuRestaurant";
+import {Hotel} from "../../model/Hotel";
 import AddEditRestaurant from "./AddEditRestaurant";
 import ViewRestaurant from "./ViewRestaurant";
-import {Order} from "../model/Order";
-import PickQuantity from "./PickQuantity";
+import {Order} from "../../model/Order";
+import PickQuantity from "../order/PickQuantity";
+import {displayNotification} from "../../shared/displayNotification";
 
 
 const Restaurants: React.FC = () => {
@@ -85,6 +86,7 @@ const Restaurants: React.FC = () => {
                         send({
                             type: 'DELETE', payload: {restaurantId: record.id}
                         })
+                        displayNotification('Info','Saving has been done', 1)
                     }
                 }> Delete </Button>
             )
@@ -172,18 +174,21 @@ const Restaurants: React.FC = () => {
                         </Button>
                     }
                     <Table rowKey="id" dataSource={restaurantState.context.restaurants} columns={columns}/>
-                    {addEditVisible && <AddEditRestaurant key={restaurantId}
+                    <AddEditRestaurant key={restaurantId}
                                                           restaurantId={restaurantId}
                                                           visible={addEditVisible}
-                                                          onSubmit={() => setAddEditVisible(false)}
+                                                          onSubmit={() => {
+                                                              send({type: 'RETRY'})
+                                                              setAddEditVisible(false)
+                                                          }}
                                                           onCancel={() => setAddEditVisible(false)}
                                                           onRefresh={() => refresh()}
-                    />}
-                    {detailVisible && <ViewRestaurant key={restaurantId}
+                    />
+                    <ViewRestaurant key={restaurantId}
                                                       restaurantId={restaurantId}
                                                       visible={detailVisible}
                                                       onCancel={() => setDetailVisible(false)}
-                    />}
+                    />
                 </>
             )}
 
@@ -437,7 +442,13 @@ const createRestaurantMachine = (userContext: UserContextInterface | null,) => M
                 invoke: {
                     src: 'saveOrder',
                     onDone: {
-                        target: 'loadMenuItemsResolved'
+                        target: 'loadMenuItemsResolved',
+                        actions: assign((context, event) => {
+                            return {
+                                ...context,
+                                currentOrder: event.data.data ? event.data.data : context.currentOrder
+                            }
+                        })
                     },
                     onError: {
                         target: 'loadMenuItemsResolved'

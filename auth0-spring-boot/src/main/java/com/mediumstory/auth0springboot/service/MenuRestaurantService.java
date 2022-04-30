@@ -27,7 +27,7 @@ public class MenuRestaurantService {
 		this.restaurantRepository = restaurantRepository;
 	}
 
-	public List<MenuRestaurantDto> getMenuForId(Long restaurantId){
+	public List<MenuRestaurantDto> getMenuForRestaurantId(Long restaurantId){
 		Optional<Restaurant> restaurant = restaurantRepository.findById(restaurantId);
 		return restaurant.map(value -> menuRestaurantRepository.findAllByRestaurant(value).stream()
 				.map(m -> new MenuRestaurantDto(m.getId(),
@@ -36,6 +36,14 @@ public class MenuRestaurantService {
 						m.getImage()))
 						.collect(Collectors.toList()))
 				.orElse(Collections.EMPTY_LIST);
+	}
+
+	public MenuRestaurantDto getMenuForId(Long id){
+		return menuRestaurantRepository.findById(id)
+						.map(m -> new MenuRestaurantDto(m.getId(),
+								m.getRestaurant().getName(),
+								m.getName(), m.getPrice(),
+								m.getImage())).orElseGet(MenuRestaurantDto::new);
 	}
 
 	public List<MenuRestaurantDto> getAllMenuItemsFromAllRestaurants(){
