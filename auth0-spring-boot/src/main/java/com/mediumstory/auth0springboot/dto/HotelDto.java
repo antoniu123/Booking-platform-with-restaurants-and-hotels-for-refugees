@@ -1,15 +1,16 @@
 package com.mediumstory.auth0springboot.dto;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class HotelDto implements Serializable {
-	private long id;
+	private Long id;
 	private String name;
 	private String zone;
 	private Integer nr_rooms;
 	private String image;
 
-	public HotelDto(long id, String name, String category, Integer nr_rooms, String image) {
+	public HotelDto(Long id, String name, String category, Integer nr_rooms, String image) {
 		this.id = id;
 		this.name = name;
 		this.zone = category;
@@ -17,11 +18,11 @@ public class HotelDto implements Serializable {
 		this.image = image;
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -55,5 +56,22 @@ public class HotelDto implements Serializable {
 
 	public void setImage(String image) {
 		this.image = image;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof HotelDto)) {
+			return false;
+		}
+		HotelDto hotelDto = (HotelDto) o;
+		return Objects.equals(id, hotelDto.id) && Objects.equals(name, hotelDto.name) && Objects.equals(zone, hotelDto.zone) && Objects.equals(nr_rooms, hotelDto.nr_rooms) && Objects.equals(image, hotelDto.image);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, name, zone, nr_rooms, image);
 	}
 }

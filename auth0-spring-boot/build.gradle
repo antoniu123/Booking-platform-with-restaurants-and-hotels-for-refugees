@@ -18,8 +18,10 @@ dependencies {
 	implementation group: 'com.oracle.database.jdbc', name: 'ojdbc8', version: '21.5.0.0'
 	implementation group: 'com.auth0', name: 'java-jwt', version: '3.19.0'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'junit:junit:4.13.1'
 	compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
 }
 
 test {

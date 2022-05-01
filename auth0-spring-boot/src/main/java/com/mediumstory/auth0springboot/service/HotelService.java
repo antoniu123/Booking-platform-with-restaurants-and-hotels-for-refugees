@@ -26,7 +26,7 @@ public class HotelService{
 	}
 
 	public HotelDto saveHotel(HotelDto hotelDto){
-		Hotel hotel = new Hotel(hotelDto.getId(), hotelDto.getName(), hotelDto.getZone(), hotelDto.getNr_rooms(),hotelDto.getImage());
+		Hotel hotel = getFromHotelDto(hotelDto);
 		Hotel hotelNew = hotelRepository.save(hotel);
 		return new HotelDto(hotelNew.getId(), hotelDto.getName(), hotelDto.getZone(), hotelDto.getNr_rooms(),hotelDto.getImage());
 	}
@@ -39,5 +39,13 @@ public class HotelService{
 	public void deleteHotel(Long hotelId){
 		Hotel hotel = hotelRepository.findById(hotelId).orElseGet(Hotel::new);
 		hotelRepository.delete(hotel);
+	}
+
+	public HotelDto getFromHotel(Hotel hotel){
+		return new HotelDto(hotel.getId(), hotel.getName(), hotel.getZone(), hotel.getNr_rooms(), hotel.getImage());
+	}
+
+	public Hotel getFromHotelDto(HotelDto hotel){
+		return new Hotel(hotel.getId(), hotel.getName(), hotel.getZone(), hotel.getNr_rooms(), hotel.getImage());
 	}
 }
