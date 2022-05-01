@@ -1,6 +1,6 @@
 import React from "react";
 import {useMachine} from "@xstate/react";
-import {Button, Form, Input, message, Modal, Result, Spin,} from "antd";
+import {Button, Form, Input, Modal, Result, Spin,} from "antd";
 import {assign, Machine} from "xstate";
 import axios from "axios";
 import {Hotel} from "../../model/Hotel";
@@ -8,11 +8,11 @@ import {UserContext, UserContextInterface} from "../../App";
 import {displayNotification} from "../../shared/displayNotification";
 
 const onOk = () => {
-    message.success('Saving done', 2)
+    displayNotification('Info','Saving has been done', 2)
 }
 
 const onError = () => {
-    message.error('Error at save', 2)
+    displayNotification('Error','Error at save', 2)
 }
 
 const onFinish = (values: any) => {
@@ -73,7 +73,6 @@ const AddEditHotel: React.FC<AddEditHotelProps> = ({hotelId, visible, onSubmit, 
                                        }
                                    )
                                    onSubmit()
-                                   displayNotification('Info','Saving has been done', 1)
                                }
                                }
                                onCancel={onCancel}

@@ -1,6 +1,6 @@
 import React from "react";
 import {useMachine} from "@xstate/react";
-import {Button, Form, Input, InputNumber, message, Modal, Result, Select, Spin,} from "antd";
+import {Button, Form, Input, InputNumber, Modal, Result, Select, Spin,} from "antd";
 import {assign, Machine} from "xstate";
 import axios from "axios";
 import {MenuRestaurant} from "../../model/MenuRestaurant";
@@ -11,11 +11,11 @@ import {displayNotification} from "../../shared/displayNotification";
 const { Option } = Select;
 
 const onOk = () => {
-    message.success('saving done', 2)
+    displayNotification('Info','Saving has been done', 2)
 }
 
 const onError = () => {
-    message.error('error at save', 2)
+    displayNotification('Error','error at save', 2)
 }
 
 const onFinish = (values: any) => {
@@ -38,7 +38,7 @@ const AddEditMenuDetail: React.FC<AddEditMenuRestaurantProps> = ({menuRestaurant
 
     const value:UserContextInterface|null = React.useContext(UserContext)
 
-    const images:string[] = ["beef.jpeg","pork_ribs.jpg"]
+    const images:string[] = ["beef.jpeg","pork_ribs.jpg","pasta.jpg"]
 
     const [form] = Form.useForm()
 
@@ -84,7 +84,6 @@ const AddEditMenuDetail: React.FC<AddEditMenuRestaurantProps> = ({menuRestaurant
                                    )
 
                                    onSubmit()
-                                   displayNotification('Info','Saving has been done', 1)
                                }
                                }
                                onCancel={onCancel}

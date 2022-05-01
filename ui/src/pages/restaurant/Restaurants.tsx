@@ -2,7 +2,7 @@ import React, {useRef, useState} from "react";
 import {assign, Machine} from "xstate";
 import axios from "axios";
 import {useMachine} from "@xstate/react";
-import {Alert, Button, message, Modal, Result, Spin, Table} from 'antd';
+import {Alert, Button, Modal, Result, Spin, Table} from 'antd';
 import {UserContext, UserContextInterface} from "../../App";
 import {Restaurant} from "../../model/Restaurant";
 import {MenuRestaurant} from "../../model/MenuRestaurant";
@@ -86,7 +86,6 @@ const Restaurants: React.FC = () => {
                         send({
                             type: 'DELETE', payload: {restaurantId: record.id}
                         })
-                        displayNotification('Info','Saving has been done', 1)
                     }
                 }> Delete </Button>
             )
@@ -174,16 +173,13 @@ const Restaurants: React.FC = () => {
                         </Button>
                     }
                     <Table rowKey="id" dataSource={restaurantState.context.restaurants} columns={columns}/>
-                    <AddEditRestaurant key={restaurantId}
+                    {addEditVisible && <AddEditRestaurant key={restaurantId}
                                                           restaurantId={restaurantId}
                                                           visible={addEditVisible}
-                                                          onSubmit={() => {
-                                                              send({type: 'RETRY'})
-                                                              setAddEditVisible(false)
-                                                          }}
+                                                          onSubmit={() => setAddEditVisible(false)}
                                                           onCancel={() => setAddEditVisible(false)}
                                                           onRefresh={() => refresh()}
-                    />
+                    />}
                     <ViewRestaurant key={restaurantId}
                                                       restaurantId={restaurantId}
                                                       visible={detailVisible}
@@ -229,7 +225,6 @@ const Restaurants: React.FC = () => {
                                 {restaurantState.context.currentOrder.id &&
                                 <Button onClick={()=>{
                                     send({type: 'SUBMIT_ORDER', payload: {order: restaurantState.context.currentOrder}})
-                                    message.info('Your order has been placed');
                                 }
                                 }>Submit Order</Button>}
                             </>
@@ -414,13 +409,14 @@ const createRestaurantMachine = (userContext: UserContextInterface | null,) => M
             },
             deletingRestaurantData: {
                 invoke: {
-                    id: 'deletingRestaurantData',
                     src: 'deleteRestaurantData',
                     onDone: {
-                        target: 'loadingRestaurantData'
+                        target: 'loadingRestaurantData',
+                        actions: 'ok'
                     },
                     onError: {
-                        target: 'loadingRestaurantData'
+                        target: 'loadingRestaurantData',
+                        actions: 'error'
                     }
                 }
             },
@@ -443,15 +439,16 @@ const createRestaurantMachine = (userContext: UserContextInterface | null,) => M
                     src: 'saveOrder',
                     onDone: {
                         target: 'loadMenuItemsResolved',
-                        actions: assign((context, event) => {
+                        actions: [assign((context, event) => {
                             return {
                                 ...context,
                                 currentOrder: event.data.data ? event.data.data : context.currentOrder
                             }
-                        })
+                        }),'ok']
                     },
                     onError: {
-                        target: 'loadMenuItemsResolved'
+                        target: 'loadMenuItemsResolved',
+                        actions: 'error'
                     }
                 }
             },
@@ -459,10 +456,12 @@ const createRestaurantMachine = (userContext: UserContextInterface | null,) => M
                 invoke: {
                     src: 'sendOrder',
                     onDone: {
-                        target: 'loadingRestaurantData'
+                        target: 'loadingRestaurantData',
+                        actions: 'submit'
                     },
                     onError: {
-                        target: 'loadMenuItemsResolved'
+                        target: 'loadMenuItemsResolved',
+                        actions: 'error'
                     }
                 }
             },
@@ -482,7 +481,16 @@ const createRestaurantMachine = (userContext: UserContextInterface | null,) => M
                     ...context,
                     currentOrder: event.type === 'UPDATE' ? event.payload.order : context.currentOrder
                 }
-            })
+            }),
+            ok: () => {
+                displayNotification('Info','Saving has been done', 2)
+            },
+            error: (context,event) => {
+                displayNotification('Error',  'Error at save', 2)
+            },
+            submit:() => {
+                displayNotification('Success','Your order has been placed', 2)
+            }
         },
         services: {
             loadRestaurantData: () => {

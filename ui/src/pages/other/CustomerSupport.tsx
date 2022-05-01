@@ -1,6 +1,7 @@
 import React, {useRef} from "react";
 import {Card, message, Modal} from "antd";
 import emailjs from '@emailjs/browser'
+import {displayNotification} from "../../shared/displayNotification";
 
 const h1Styles: React.CSSProperties = {
     position: 'relative',
@@ -63,10 +64,10 @@ const CustomerSupport: React.VFC<CustomerSupportProps> = ({visible,close}) => {
             process.env.REACT_APP_TEMPLATE_ID?process.env.REACT_APP_TEMPLATE_ID : '' ,
             form.current ? form.current :'', '--hYWIXb57RG9jcUa')
             .then((result) => {
-                    message.info(result.text)
+                    displayNotification('Success',  result.text, 1)
                 },
                 (error:Error) => {
-                    message.error(error.message)
+                    displayNotification('Error',  error.message, 1)
                 });
         form.current.reset()
     };

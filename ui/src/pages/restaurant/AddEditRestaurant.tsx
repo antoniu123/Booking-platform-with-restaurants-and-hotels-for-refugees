@@ -1,6 +1,6 @@
 import React from "react";
 import {useMachine} from "@xstate/react";
-import {Button, Form, Input, message, Modal, Result, Spin,} from "antd";
+import {Button, Form, Input, Modal, Result, Spin,} from "antd";
 import {assign, Machine} from "xstate";
 import axios from "axios";
 import {Restaurant} from "../../model/Restaurant";
@@ -8,11 +8,11 @@ import {UserContext, UserContextInterface} from "../../App";
 import {displayNotification} from "../../shared/displayNotification";
 
 const onOk = () => {
-    message.success('saving done', 2)
+    displayNotification('Info','Saving has been done', 2)
 }
 
 const onError = () => {
-    message.error('error at save', 2)
+    displayNotification('Error','error at save', 2)
 }
 
 const onFinish = (values: any) => {
@@ -73,7 +73,6 @@ const AddEditRestaurant: React.FC<AddEditRestarantProps> = ({restaurantId, visib
                                        }
                                    )
                                    onSubmit()
-                                   displayNotification('Info','Saving has been done', 1)
                                }
                                }
                                onCancel={onCancel}
@@ -164,13 +163,8 @@ const createRestaurantMachine = (userContext:UserContextInterface|null,
                             onRefresh: () => void) =>
     Machine<AddEditRestaurantMachineContext, AddEditRestaurantMachineSchema, AddEditRestaurantMachineEvent>(
         {
-            id: 'addedit-Restaurant-machine',
             context: {
-                restaurant: {
-                    id: 0,
-                    name: '',
-                    image: ''
-                }
+                restaurant: { } as Restaurant
             },
             initial: 'loadingRestaurant',
             states: {

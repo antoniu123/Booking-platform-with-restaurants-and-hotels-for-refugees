@@ -141,7 +141,6 @@ const Hotels: React.FC = () => {
                             () => {
                                 setHotelId(0)
                                 setAddEditVisible(true)
-                                displayNotification('Info','Saving has been done', 1)
                             }
                         }>Add
                         </Button>
@@ -314,9 +313,11 @@ const createHotelMachine = (userContext: UserContextInterface | null) => Machine
                     src: 'deleteHotelData',
                     onDone: {
                         target: 'loadingHotelData'
+
                     },
                     onError: {
                         target: 'loadingHotelData'
+
                     }
                 }
             },
@@ -335,16 +336,26 @@ const createHotelMachine = (userContext: UserContextInterface | null) => Machine
                     id: 'savingReservation',
                     src: 'saveReservation',
                     onDone: {
-                        target: 'loadingHotelData'
+                        target: 'loadingHotelData',
+                        actions: 'ok'
                     },
                     onError: {
-                        target: 'pickingHotel'
+                        target: 'pickingHotel',
+                        actions: 'error'
                     }
                 }
             }
         }
     },
     {
+        actions: {
+            ok: () => {
+                displayNotification('Info','Saving has been done', 1)
+            },
+            error: (context,event) => {
+                displayNotification('Error',  'Error at save', 1)
+            }
+        },
         services: {
             loadHotelData: () => {
                 const token = userContext ? userContext.accessToken : ''

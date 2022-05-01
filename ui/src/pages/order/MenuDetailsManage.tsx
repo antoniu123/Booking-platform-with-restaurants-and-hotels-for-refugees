@@ -72,7 +72,6 @@ const MenuDetailsManage: React.FC = () => {
                         send({
                             type: 'DELETE', payload: {menuRestaurantId: record.id}
                         })
-                        displayNotification('Info','Saving has been done', 1)
                     }
                 }> Delete </Button>
             )
@@ -206,16 +205,26 @@ const createMenuRestaurantMachine = (userContext: UserContextInterface | null) =
                     id: 'deletingMenuRestaurantData',
                     src: 'deleteMenuRestaurantData',
                     onDone: {
-                        target: 'loadingMenuRestaurantData'
+                        target: 'loadingMenuRestaurantData',
+                        actions: 'ok'
                     },
                     onError: {
-                        target: 'loadingMenuRestaurantData'
+                        target: 'loadingMenuRestaurantData',
+                        actions: 'error'
                     }
                 }
             }
         }
     },
     {
+        actions: {
+            ok: () => {
+                displayNotification('Info','Saving has been done', 1)
+            },
+            error: (context,event) => {
+                displayNotification('Error',  'Error at save', 1)
+            }
+        },
         services: {
             loadMenuRestaurantData: () => {
                 const token = userContext ? userContext.accessToken : ''

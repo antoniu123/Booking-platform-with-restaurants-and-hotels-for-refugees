@@ -14,12 +14,12 @@ const OfferHelp: React.VFC<OfferHelpProps> = ({visible,close}) => {
     const value: UserContextInterface | null = React.useContext(UserContext)
     const [form] = Form.useForm()
     const submit = () => {
-        if(form.getFieldValue("name")===undefined || form.getFieldValue("address")===undefined ){
+        if (form.getFieldValue("name") === undefined || form.getFieldValue("address") === undefined) {
             message.error("Please fill the fields")
             return
         }
         const token = value ? value.accessToken : ''
-        const helpPoint:HelpPoint = {
+        const helpPoint: HelpPoint = {
             id: undefined as unknown as number,
             name: form.getFieldValue('name'),
             address: form.getFieldValue('address')
@@ -31,6 +31,8 @@ const OfferHelp: React.VFC<OfferHelpProps> = ({visible,close}) => {
                 "Content-Type": "application/json"
             }
         })
+            .then(()=>displayNotification('Info','Saving has been done', 2))
+            .catch((error)=>displayNotification('Error',error, 2))
         close()
         form.resetFields()
     }
@@ -39,7 +41,6 @@ const OfferHelp: React.VFC<OfferHelpProps> = ({visible,close}) => {
                visible={visible}
                onOk={() => {
                    submit()
-                   displayNotification('Info','Saving has been done', 1)
                }               }
                onCancel={close}
         >
