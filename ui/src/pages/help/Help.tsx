@@ -7,6 +7,7 @@ import {Alert, Button, Result, Spin} from "antd";
 import {LoadingOutlined} from "@ant-design/icons";
 import {UserContext, UserContextInterface} from '../../App'
 import Geocode from "./Geocode";
+import './map.css'
 
 
 export const Help: React.VFC = () => {
@@ -26,7 +27,7 @@ export const Help: React.VFC = () => {
             {helpState.matches('idle') && (
                 // <MapView basemap={"streets"} x={26.09} y={44.43} height={800} zoom={5.5}/>
                 <Geocode
-                    centerX={26.09} centerY={44.43} zoom={5.5}
+                    centerX={26.09} centerY={44.43} zoom={9}
                     addresses={helpState.context.helpPoints && helpState.context.helpPoints.length>0 ?
                         helpState.context.helpPoints.map((hp:HelpPoint)=>hp.address) : []}
                 />

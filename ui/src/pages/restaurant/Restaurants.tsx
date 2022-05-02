@@ -173,13 +173,13 @@ const Restaurants: React.FC = () => {
                         </Button>
                     }
                     <Table rowKey="id" dataSource={restaurantState.context.restaurants} columns={columns}/>
-                    {addEditVisible && <AddEditRestaurant key={restaurantId}
+                    <AddEditRestaurant key={restaurantId}
                                                           restaurantId={restaurantId}
                                                           visible={addEditVisible}
                                                           onSubmit={() => setAddEditVisible(false)}
                                                           onCancel={() => setAddEditVisible(false)}
                                                           onRefresh={() => refresh()}
-                    />}
+                    />
                     <ViewRestaurant key={restaurantId}
                                                       restaurantId={restaurantId}
                                                       visible={detailVisible}
@@ -482,15 +482,18 @@ const createRestaurantMachine = (userContext: UserContextInterface | null,) => M
                     currentOrder: event.type === 'UPDATE' ? event.payload.order : context.currentOrder
                 }
             }),
-            ok: () => {
+            ok: assign((context, _) => {
                 displayNotification('Info','Saving has been done', 2)
-            },
-            error: (context,event) => {
+                return context
+            }),
+            error: assign((context,_) => {
                 displayNotification('Error',  'Error at save', 2)
-            },
-            submit:() => {
+                return context
+            }),
+            submit:assign((context,_) => {
                 displayNotification('Success','Your order has been placed', 2)
-            }
+                return context
+            })
         },
         services: {
             loadRestaurantData: () => {

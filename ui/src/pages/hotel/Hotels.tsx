@@ -26,12 +26,24 @@ const Hotels: React.FC = () => {
     const [detailVisible, setDetailVisible] = useState(false);
     const [formSave] = Form.useForm();
     const submit = () => {
+        if (formSave.getFieldValue('dateIn') === undefined ||
+            formSave.getFieldValue('dateOut') === undefined){
+            displayNotification('Error', "Please fill the dates",
+                2);
+            return
+        }
+        if (formSave.getFieldValue('dateIn').format('YYYY-MM-DD') >=
+            formSave.getFieldValue('dateOut').format('YYYY-MM-DD')){
+            displayNotification('Error', "Departure date must be greater than arrive date",
+                2);
+            return
+        }
         send({
             type: 'SAVE',
             payload: {reservation: {...hotelState.context.reservation,
                                     hotelName: hotelName,
-                                    dateIn: formSave.getFieldValue("dateIn"),
-                                    dateOut: formSave.getFieldValue("dateOut"),
+                                    dateIn: formSave.getFieldValue("dateIn").utc(true).format('YYYY-MM-DD'),
+                                    dateOut: formSave.getFieldValue("dateOut").utc(true).format('YYYY-MM-DD'),
                                     valid: 1
             }}
         })
@@ -145,7 +157,7 @@ const Hotels: React.FC = () => {
                         }>Add
                         </Button>
                     }
-                    <Table dataSource={hotelState.context.hotels} columns={columns}/>
+                    <Table rowKey="id" dataSource={hotelState.context.hotels} columns={columns}/>
                     <AddEditHotel key={hotelId}
                                   hotelId={hotelId}
                                   visible={addEditVisible}
@@ -212,7 +224,8 @@ const Hotels: React.FC = () => {
                             rules={[{ required: true, message: "Please select departure date!"},
                             ({ getFieldValue }) => ({
                                 validator(_, value) {
-                                    if (!value || getFieldValue('dateIn') < value) {
+                                    if (!value ||
+                                        getFieldValue('dateIn').format('YYYY-MM-DD') < value.format('YYYY-MM-DD')) {
                                         return Promise.resolve();
                                     }
                                     return Promise.reject(new Error('Arriving date must be before departure date!'));

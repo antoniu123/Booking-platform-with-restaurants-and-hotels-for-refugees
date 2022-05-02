@@ -1,15 +1,31 @@
-import {Button, Table} from "antd";
+import {Button, Col, Modal, Row, Table} from "antd";
 import axios from "axios";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {UserContext, UserContextInterface} from "../../App";
 import {Reservation} from "../../model/Reservation";
 import {User} from "@auth0/auth0-spa-js";
 import {displayNotification} from "../../shared/displayNotification";
+import {QuestionCircleOutlined} from "@ant-design/icons";
 
 const Reservations: React.VFC = () => {
     const value: UserContextInterface | null = React.useContext(UserContext)
     const [reservations, setReservations] = useState<any>(null)
-    const [submit, setSubmit] =useState(0)
+    const [submit, setSubmit] = useState(0)
+    const [dialog, setDialog] = useState(false)
+    const currentReservation = useRef(0)
+
+    const okDialog = (id:number) : void  => {
+        cancelReservation(id);
+        setSubmit(1)
+        displayNotification('Info','Saving has been done', 1)
+        setDialog(false)
+        currentReservation.current = 0
+    }
+
+    const cancelDialog = () : void => {
+        setDialog(false)
+        currentReservation.current = 0
+    }
     
     useEffect(() => {
         const textUrl = `http://${process.env.REACT_APP_SERVER_NAME}/reservations/all`
@@ -59,6 +75,8 @@ const Reservations: React.VFC = () => {
             title: 'Id',
             dataIndex: 'id',
             key: 'id',
+            width: '15%',
+            align: 'right' as 'right'
         },
         {
             title: 'Hotel Name',
@@ -82,10 +100,8 @@ const Reservations: React.VFC = () => {
             key: 'cancel',
             render: (record: Reservation) => (
                 record.valid === 1 ?  <Button onClick={() => {
-                    cancelReservation(record.id);
-                    setSubmit(1)
-                    displayNotification('Info','Saving has been done', 1)
-
+                    currentReservation.current = record.id
+                    setDialog(true)
                 }
                 }> Cancel </Button> : <> </>
 
@@ -97,7 +113,20 @@ const Reservations: React.VFC = () => {
         <>
          <Table rowKey="id" dataSource={ reservations && reservations.length>0 ?
              reservations.filter((r:Reservation)=>r.userId=getSubFromUser(value?.user)) : []} columns={columns}/>
-        </>  
+        <Modal title={<Row className="inline-block align-text-bottom">
+                           <Col>
+                               <QuestionCircleOutlined style={{ color: 'red' }} />
+                           </Col>
+                           <Col>
+                               <p>Warning</p>
+                           </Col>
+                       </Row>} visible={dialog} onOk={()=>okDialog(currentReservation.current)} onCancel={cancelDialog} maskClosable={false}>
+           <span className="align-middle">
+               <p>Are you sure you want to cancel the reservation ?</p>
+           </span>
+        </Modal>
+        </>
+
     )      
 }    
 

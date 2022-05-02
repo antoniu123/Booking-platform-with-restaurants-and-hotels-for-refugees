@@ -48,3 +48,9 @@
 .ant-modal-header {
   background: #30a2c2
 }
+
+.ant-layout-header {
+  color: white;
+  height: 40px;
+  line-height: 40px;
+}

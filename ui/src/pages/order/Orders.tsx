@@ -3,7 +3,7 @@ import axios from "axios";
 import React, {useEffect, useState} from "react";
 import {UserContext, UserContextInterface} from "../../App";
 import {User} from "@auth0/auth0-spa-js";
-import {Order} from "../../model/Order";
+import {Order} from "../../model/Order"
 
 const Orders: React.VFC = () => {
     const value: UserContextInterface | null = React.useContext(UserContext)
@@ -40,9 +40,12 @@ const Orders: React.VFC = () => {
 
     const columns = [
         {
-            title: 'Id',
+            title: '#',
             dataIndex: 'id',
             key: 'id',
+            width: '15%',
+            align: 'right' as 'right',
+            sorter: (a: Order, b: Order) => b.id - a.id
         },
         {
             title: 'Restaurant Name',
@@ -53,6 +56,8 @@ const Orders: React.VFC = () => {
             title: 'Price',
             dataIndex: 'price',
             key: 'price',
+            width: '25%',
+            align: 'right' as 'right'
         },
     ]
 
@@ -61,6 +66,8 @@ const Orders: React.VFC = () => {
             title: 'Id',
             dataIndex: 'id',
             key: 'id',
+            width: '15%',
+            align: 'right' as 'right'
         },
         {
             title: 'Food',
@@ -71,11 +78,15 @@ const Orders: React.VFC = () => {
             title: 'Qty',
             dataIndex: 'quantity',
             key: 'quantity',
+            width: '25%',
+            align: 'right' as 'right'
         },
         {
             title: 'Price',
             dataIndex: 'price',
             key: 'price',
+            width: '15%',
+            align: 'right' as 'right'
         },
     ]
 
@@ -85,7 +96,8 @@ const Orders: React.VFC = () => {
             <div className="site-card-wrapper">
                 <Table rowKey="id" scroll={{x: 'calc(1200px+50%)'}} bordered
                        dataSource={orders && orders.length>0 ?
-                           orders.filter((o:Order)=>o.userId=getSubFromUser(value?.user)) : []}
+                           orders.filter((o:Order)=>o.userId=getSubFromUser(value?.user))
+                               .sort((a:Order,b:Order)=>b.id-a.id) : []}
                        expandable={{
                            expandedRowRender: (record:Order) =>
                                <>

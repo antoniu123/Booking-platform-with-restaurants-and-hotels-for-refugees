@@ -18,6 +18,7 @@ import OfferHelp from "./pages/help/OfferHelp";
 import CustomerSupport from "./pages/other/CustomerSupport";
 import Orders from "./pages/order/Orders";
 import EditProfile from "./pages/other/EditProfile";
+import {Header} from "antd/es/layout/layout";
 
 const { SubMenu } = Menu;
 const {Content, Sider } = Layout;
@@ -82,7 +83,9 @@ const App: React.VFC = () => {
   return (
     <>
     { isLoading ?
-      <><Spin size="large" indicator={antIcon} /> </> :
+      <>
+        <Spin size="large" indicator={antIcon} />
+      </> :
       <>
         {(isAuthenticated && accessToken) &&
           ( <>
@@ -92,10 +95,10 @@ const App: React.VFC = () => {
                role: getRole(accessToken)
               }
             }>
-              <Layout>
-                <p className="ant-divider-with-text">Hi {user ? user.email : ''}, You have successfully logged in as {getRole(accessToken)}</p>
                 <Layout>
-                  <Sider width={200} className="site-layout-background">
+                  <Sider breakpoint="lg"
+                         collapsedWidth="0"
+                         className="site-layout-background">
                     <Menu
                         mode="inline"
                         style={{ height: '100%', borderRight: 0 }}
@@ -155,11 +158,14 @@ const App: React.VFC = () => {
                       <Menu.Item key="12" onClick={()=>logout({ returnTo: window.location.origin })}>Logout</Menu.Item>
                     </Menu>
                   </Sider>
-                  <Layout style={{ padding: '0 24px 24px' }}>
+                  <Layout >
+                    <Header className="header">
+                      <p> Hi {user ? user.email : ''} [{getRole(accessToken)}]</p>
+                    </Header>
                     <Content
                         className="site-layout-background"
                         style={{
-                          padding: 24,
+                          padding: 0,
                           margin: 0,
                           minHeight: 280,
                         }}
@@ -187,7 +193,6 @@ const App: React.VFC = () => {
                     </Content>
                   </Layout>
                 </Layout>
-              </Layout>
             </UserContext.Provider>
             </>)
         }
