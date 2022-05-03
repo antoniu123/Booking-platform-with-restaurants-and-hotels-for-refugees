@@ -1,6 +1,7 @@
 package com.backend.auth0springboot.dto;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class HelpPointDto implements Serializable {
 	private long id;
@@ -38,6 +39,23 @@ public class HelpPointDto implements Serializable {
 
 	public void setAddress(String address) {
 		this.address = address;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof HelpPointDto)) {
+			return false;
+		}
+		HelpPointDto that = (HelpPointDto) o;
+		return id == that.id && Objects.equals(name, that.name) && Objects.equals(address, that.address);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, name, address);
 	}
 
 	@Override

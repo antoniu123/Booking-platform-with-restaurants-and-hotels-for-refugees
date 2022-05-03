@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Objects;
 
 @Entity
 @Table(name = "HELP_POINT")
@@ -52,5 +53,22 @@ public class HelpPoint {
 
 	public void setAddress(String address) {
 		this.address = address;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof HelpPoint)) {
+			return false;
+		}
+		HelpPoint helpPoint = (HelpPoint) o;
+		return Objects.equals(id, helpPoint.id) && Objects.equals(name, helpPoint.name) && Objects.equals(address, helpPoint.address);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, name, address);
 	}
 }

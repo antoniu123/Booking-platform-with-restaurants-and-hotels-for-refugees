@@ -1,11 +1,15 @@
 package com.backend.auth0springboot.dto;
 
-public class ResponseDto {
+import com.fasterxml.jackson.annotation.JsonCreator;
+
+import java.io.Serializable;
+
+public class ResponseDto implements Serializable {
 
 	private String message;
 
+	@JsonCreator
 	public ResponseDto(String message) {
-		super();
 		this.message = message;
 	}
 

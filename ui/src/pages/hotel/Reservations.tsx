@@ -98,6 +98,7 @@ const Reservations: React.VFC = () => {
         {
             title: 'Cancel',
             key: 'cancel',
+            hidden: value?.role.toString() === "ADMIN",
             render: (record: Reservation) => (
                 record.valid === 1 ?  <Button onClick={() => {
                     currentReservation.current = record.id
@@ -107,7 +108,7 @@ const Reservations: React.VFC = () => {
 
             )
         }
-    ]
+    ].filter(item => !item.hidden);
 
     return (
         <>

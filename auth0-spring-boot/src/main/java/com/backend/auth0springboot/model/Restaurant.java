@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Objects;
 
 @Entity
 @Table(name = "RESTAURANT")
@@ -52,5 +53,22 @@ public class Restaurant {
 
 	public void setImage(String image) {
 		this.image = image;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof Restaurant)) {
+			return false;
+		}
+		Restaurant that = (Restaurant) o;
+		return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(image, that.image);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, name, image);
 	}
 }
