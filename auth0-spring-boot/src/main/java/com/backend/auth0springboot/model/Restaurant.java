@@ -71,4 +71,13 @@ public class Restaurant {
 	public int hashCode() {
 		return Objects.hash(id, name, image);
 	}
+
+	@Override
+	public String toString() {
+		return "Restaurant{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", image='" + image + '\'' +
+				'}';
+	}
 }

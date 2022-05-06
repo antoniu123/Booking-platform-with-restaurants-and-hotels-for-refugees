@@ -1,6 +1,7 @@
 package com.backend.auth0springboot.dto;
 
 import java.util.List;
+import java.util.Objects;
 
 public class OrderDto {
 	private Long id;
@@ -23,6 +24,10 @@ public class OrderDto {
 		this.orderLines = orderLines;
 		this.price = price;
 		this.userId = userId;
+	}
+
+	public OrderDto() {
+
 	}
 
 	public Long getId() {
@@ -72,5 +77,22 @@ public class OrderDto {
 
 	public void setUserId(String userId) {
 		this.userId = userId;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof OrderDto)) {
+			return false;
+		}
+		OrderDto orderDto = (OrderDto) o;
+		return Objects.equals(id, orderDto.id) && Objects.equals(restaurantName, orderDto.restaurantName) && Objects.equals(status, orderDto.status) && Objects.equals(price, orderDto.price) && Objects.equals(orderLines, orderDto.orderLines) && Objects.equals(userId, orderDto.userId);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, restaurantName, status, price, orderLines, userId);
 	}
 }

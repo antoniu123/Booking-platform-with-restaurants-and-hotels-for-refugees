@@ -10,10 +10,13 @@ public class HotelDto implements Serializable {
 	private Integer nr_rooms;
 	private String image;
 
-	public HotelDto(Long id, String name, String category, Integer nr_rooms, String image) {
+	public HotelDto() {
+	}
+
+	public HotelDto(Long id, String name, String zone, Integer nr_rooms, String image) {
 		this.id = id;
 		this.name = name;
-		this.zone = category;
+		this.zone = zone;
 		this.nr_rooms = nr_rooms;
 		this.image = image;
 	}

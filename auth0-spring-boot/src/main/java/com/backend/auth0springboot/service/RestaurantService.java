@@ -23,8 +23,9 @@ public class RestaurantService {
 	}
 
 	public RestaurantDto getRestaurantById(Long id){
-		Restaurant restaurant =  restaurantRepository.findById(id).orElseGet(Restaurant::new);
-		return new RestaurantDto(restaurant.getId(),restaurant.getName(),restaurant.getImage());
+		return restaurantRepository.findById(id)
+				.map(rest->new RestaurantDto(rest.getId(),rest.getName(),rest.getImage()))
+				.orElseGet(RestaurantDto::new);
 	}
 
 	public RestaurantDto saveRestaurant(RestaurantDto restaurantDto){

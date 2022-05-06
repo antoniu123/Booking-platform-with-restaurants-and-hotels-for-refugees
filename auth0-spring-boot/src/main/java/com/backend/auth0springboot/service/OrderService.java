@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -122,12 +123,15 @@ public class OrderService {
 	}
 
 	public OrderDto getOrderById(Long orderId){
-		Order order =  orderRepository.getById(orderId);
-		List<OrderLineDto> orderLineDtoList = order.getOrderLines().stream()
+		return orderRepository.findById(orderId)
+				.map(o->{
+					List<OrderLineDto> orderLineDtoList = o.getOrderLines().stream()
 							.map(ol -> new OrderLineDto(ol.getId(), ol.getMenuRestaurant().getName(), ol.getQuantity(), ol.getPrice()))
 							.collect(Collectors.toList());
-		return new OrderDto(order.getId(), order.getRestaurant().getName(), order.getStatus(), order.getPrice(),
-				orderLineDtoList, order.getUserId());
+					return new OrderDto(o.getId(), o.getRestaurant().getName(), o.getStatus(), o.getPrice(),
+							orderLineDtoList, o.getUserId());
+				}).orElseGet(OrderDto::new);
+
 	}
 
 	public void sendOrder(final Long orderId) {

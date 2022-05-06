@@ -10,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import java.util.Objects;
 
 @Entity
 @Table(name = "ORDERS_DETAIL")
@@ -91,5 +92,22 @@ public class OrderLine {
 				", quantity=" + quantity +
 				", price=" + price +
 				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof OrderLine)) {
+			return false;
+		}
+		OrderLine orderLine = (OrderLine) o;
+		return Float.compare(orderLine.price, price) == 0 && Objects.equals(id, orderLine.id) && Objects.equals(order, orderLine.order) && Objects.equals(menuRestaurant, orderLine.menuRestaurant) && Objects.equals(quantity, orderLine.quantity);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, order, menuRestaurant, quantity, price);
 	}
 }

@@ -10,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
 @Table(name = "RESERVATION")
@@ -92,5 +93,22 @@ public class Reservation {
 
 	public void setUserId(String userId) {
 		this.userId = userId;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof Reservation)) {
+			return false;
+		}
+		Reservation that = (Reservation) o;
+		return Objects.equals(id, that.id) && Objects.equals(hotel, that.hotel) && Objects.equals(dateIn, that.dateIn) && Objects.equals(dateOut, that.dateOut) && Objects.equals(valid, that.valid) && Objects.equals(userId, that.userId);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, hotel, dateIn, dateOut, valid, userId);
 	}
 }

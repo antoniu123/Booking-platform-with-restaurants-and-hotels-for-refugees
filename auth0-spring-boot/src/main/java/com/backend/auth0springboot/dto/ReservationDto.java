@@ -2,6 +2,7 @@ package com.backend.auth0springboot.dto;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 public class ReservationDto implements Serializable {
 	private Long id;
@@ -66,5 +67,22 @@ public class ReservationDto implements Serializable {
 
 	public void setUserId(String userId) {
 		this.userId = userId;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof ReservationDto)) {
+			return false;
+		}
+		ReservationDto that = (ReservationDto) o;
+		return Objects.equals(id, that.id) && Objects.equals(hotelName, that.hotelName) && Objects.equals(dateIn, that.dateIn) && Objects.equals(dateOut, that.dateOut) && Objects.equals(valid, that.valid) && Objects.equals(userId, that.userId);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, hotelName, dateIn, dateOut, valid, userId);
 	}
 }
