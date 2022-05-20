@@ -100,7 +100,6 @@ const Hotels: React.FC = () => {
                         send({
                             type: 'DELETE', payload: {hotelId: record.id}
                         })
-                        displayNotification('Info','Saving has been done', 1)
                     }
                 }> Delete </Button>
             )
@@ -325,12 +324,12 @@ const createHotelMachine = (userContext: UserContextInterface | null) => Machine
                     id: 'deletingHotelData',
                     src: 'deleteHotelData',
                     onDone: {
-                        target: 'loadingHotelData'
-
+                        target: 'loadingHotelData',
+                        actions: 'ok'
                     },
                     onError: {
-                        target: 'loadingHotelData'
-
+                        target: 'loadingHotelData',
+                        actions: 'error'
                     }
                 }
             },

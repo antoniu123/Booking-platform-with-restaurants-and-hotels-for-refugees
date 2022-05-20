@@ -1,6 +1,6 @@
 import {Button, Col, Modal, Row, Table} from "antd";
 import axios from "axios";
-import React, {useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import {UserContext, UserContextInterface} from "../../App";
 import {Reservation} from "../../model/Reservation";
 import {User} from "@auth0/auth0-spa-js";
@@ -15,7 +15,7 @@ const Reservations: React.VFC = () => {
     const currentReservation = useRef(0)
 
     const okDialog = (id:number) : void  => {
-        cancelReservation(id);
+        cancelReservation();
         setSubmit(1)
         displayNotification('Info','Saving has been done', 1)
         setDialog(false)
@@ -26,6 +26,20 @@ const Reservations: React.VFC = () => {
         setDialog(false)
         currentReservation.current = 0
     }
+
+    const cancelReservation = useCallback(() => {
+        const token = value ? value.accessToken : ''
+        const url = `http://${process.env.REACT_APP_SERVER_NAME}/reservations/reservation/${currentReservation.current}/cancel`
+        return axios.post(url, {}, {headers: {"Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"} })
+    }, [currentReservation, value]);
+
+    // const cancelReservation = (reservationId:number) => {
+    //     const token = value ? value.accessToken : ''
+    //     const url = `http://${process.env.REACT_APP_SERVER_NAME}/reservations/reservation/${reservationId}/cancel`
+    //     return axios.post(url, {}, {headers: {"Authorization": `Bearer ${token}`,
+    //             "Content-Type": "application/json"} })
+    // }
     
     useEffect(() => {
         const textUrl = `http://${process.env.REACT_APP_SERVER_NAME}/reservations/all`
@@ -46,7 +60,7 @@ const Reservations: React.VFC = () => {
         };
         getText()
         setSubmit(0)
-    },[submit, value?.accessToken]);
+    },[submit, value?.accessToken, cancelReservation]);
 
     const getSubFromUser = (user:User|undefined) => {
         if (user){
@@ -61,13 +75,6 @@ const Reservations: React.VFC = () => {
             return ''
         }
         return value.slice(0,10)
-    }
-
-    const cancelReservation = (reservationId:number) => {
-        const token = value ? value.accessToken : ''
-        const url = `http://${process.env.REACT_APP_SERVER_NAME}/reservations/reservation/${reservationId}/cancel`
-        return axios.post(url, {}, {headers: {"Authorization": `Bearer ${token}`,
-                "Content-Type": "application/json"} })
     }
 
     const columns = [

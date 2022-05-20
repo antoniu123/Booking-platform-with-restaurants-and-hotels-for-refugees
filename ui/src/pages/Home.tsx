@@ -7,7 +7,8 @@ export const Home : React.VFC = () => {
         <>
             <Image
                 preview={false}
-                src="background.jpg"
+                src="bckg.jpeg"
+                width= {1000}
             />
         </>
     )

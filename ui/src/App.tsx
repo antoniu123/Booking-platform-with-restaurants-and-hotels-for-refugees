@@ -201,7 +201,7 @@ const App: React.VFC = () => {
           (
             <div className="App">
               <header className="App-header">
-                <img src= "background.jpg" alt="background" />
+                <img src= "bckg.jpeg" width={"1000"} alt="background" />
               </header>
               <Button type="primary" onClick={() => login()}>
                         Log in

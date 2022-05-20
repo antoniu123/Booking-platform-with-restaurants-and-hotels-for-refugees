@@ -5,13 +5,11 @@ import com.backend.auth0springboot.dto.ResponseDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -24,7 +22,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {Auth0SpringBootApplication.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@WithMockUser()
 public class ApplicationIntegrationTest {
 
 	@LocalServerPort
@@ -55,13 +52,6 @@ public class ApplicationIntegrationTest {
 
 		Assert.assertEquals("Public Endpoint Working fine !", response.getMessage());
 
-	}
-
-	@Test
-	@Ignore
-	public void shouldReponseDeniedBecauseAnyTokenProvided() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/auth0/private"))
-				.andExpect(status().isUnauthorized());
 	}
 
 }
